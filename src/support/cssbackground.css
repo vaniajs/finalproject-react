@@ -1,0 +1,29 @@
+.body{
+    scroll-behavior: smooth;
+ 
+}
+
+.bg-im{
+    background-color: transparent;
+}
+
+.bg-imej{
+    background-image: url('https://images.unsplash.com/photo-1417721955552-a49ac2d334e8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60') ;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -999;
+    background-position: right;
+    display: inline;
+    
+}
+
+.ttl{
+    font-family: 'Abril Fatface', cursive;
+    text-decoration: italic;
+    color: rgb(0,48,143);
+    ;
+}
+
+.ontop{
+    position: relative;
+}
