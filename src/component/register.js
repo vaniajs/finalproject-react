@@ -6,7 +6,7 @@ import { Redirect } from 'react-router-dom';
 import '../support/cssform.css';
 
 class Register extends React.Component {
-    state={error:''}
+    state={error:'',reg:false}
 
     componentWillReceiveProps(newProps){
         if(newProps!==''){
@@ -17,17 +17,27 @@ class Register extends React.Component {
 
     btnReg = () => {
         var username = this.refs.username.value
-        var email = this.refs.username.value
+        var email = this.refs.email.value
         var mobile = this.refs.mobile.value
-        var pass1 = this.refs.pass1.value
+        var password = this.refs.pass1.value
         var pass2 = this.refs.pass2.value
-            {
-        username==='' || email==='' || mobile==='' || pass1==='' || pass2===''?
-        this.setState({error:'Please fill all the required field'})
-        : pass1 !== pass2 ?
-        this.setState({error:'Wrong password confirmation'})
-        : this.props.userReg(username,email,mobile,pass1)
-    }
+    //         {
+    //     username==='' || email==='' || mobile==='' || password==='' || pass2===''?
+    //     this.setState({error:'Please fill all the required field'})
+    //     : password !== pass2 ?
+    //     this.setState({error:'Wrong password confirmation'})
+    //     : this.props.userReg(username,email,mobile,password)
+    // }
+        if(username==='' || email==='' || mobile==='' || password==='' || pass2===''){
+            this.setState({error:'Please fill all the required field'})
+        }else if(password !== pass2 ){
+            this.setState({error:'Wrong password confirmation'})
+        }else if(this.props.error){
+            this.setState({error:this.props.error})
+        }else{
+            this.props.userReg(username,email,mobile,password)
+            this.setState({reg:true})
+        }
     }
     
     // errorMsg = () => {
@@ -53,6 +63,11 @@ class Register extends React.Component {
         if(this.props.username!==''){
             return <Redirect to='/'/>
         }
+
+        if(this.state.reg===true){
+            return <Redirect to='/verify'/>
+        }
+
         var stylingP = { marginTop: "20px", color: "#5C5C5C", marginLeft: "-30px", fontFamily: "Montserrat", fontWeight: "600", letterSpacing:'2px', fontSize:'14px' }
         var stylingB = {marginRight: "20px", fontFamily: "Montserrat", marginTop: "-10px", fontSize: "12px" }
 

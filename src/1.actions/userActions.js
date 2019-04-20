@@ -2,104 +2,122 @@ import axios from 'axios';
 import Cookies from 'universal-cookie';
 
 const objCookie = new Cookies()
-export const onLogin = (username,password) => {
-    return(dispatch) =>{
+
+export const onLogin = (username, password) => {
+    return (dispatch) => {
         dispatch({
             type: 'LOADING',
         })
-        axios.get('http://localhost:2000/users',{
-            params:{username,
-                    password,
-                    }}) 
-        .then((res) => {
-            console.log(res)
-            if(res.data.length>0){
-                dispatch({
-                    type: 'LOGIN_SUCCESS',
-                    payload : 
-                    {
-                        username: res.data[0].username,
-                        role: res.data[0].role,
-                        id: res.data[0].id
-                    }
-            })}
-            else{
-                dispatch({
-                    type: 'USER_NOT_FOUND',
-                })
+        axios.get('http://localhost:2000/user/login', {
+            params: {
+                username,
+                password,
             }
         })
-        .catch((err) => {
-            dispatch({
-                type:"SYSTEM_ERROR",
+            .then((res) => {
+                console.log(res)
+                if (res.data.length > 0) {
+                    dispatch({
+                        type: 'LOGIN_SUCCESS',
+                        payload: res.data
+                        // {
+                        //     username: res.data[0].username,
+                        //     role: res.data[0].role,
+                        //     id: res.data[0].id
+                        // }
+                    },
+                    objCookie.set('userData', res.data[0].username ,{path:'/'})
+                    )
+                }
+                else {
+                    dispatch({
+                        type: 'USER_NOT_FOUND',
+                    })
+                }
             })
-        })}} 
+            .catch((err) => {
+                dispatch({
+                    type: "SYSTEM_ERROR",
+                })
+            })
+    }
+}
 
 
 export const keepLogin = (cookie) => {
-    return(dispatch) => {
-        axios.get('http://localhost:2000/users',{
-            params:{
-                username: cookie
-            }
-        })
-        .then((res)=>{
-            if(res.data.length>0){
-                dispatch({
-                    type: 'LOGIN_SUCCESS',
-                    payload: {
-                        username: res.data[0].username,
-                        role:res.data[0].role,
-                        id: res.data[0].id
-                    }
-                })
-            }
-        })
-        .catch((err)=>console.log(err))
+    return (dispatch) => {
+        axios.get('http://localhost:2000/user/keeplogin?username='+cookie)
+            .then((res) => {
+                if (res.data.length > 0) {
+                    dispatch({
+                        type: 'LOGIN_SUCCESS',
+                        payload: res.data
+                    })
+                }
+            })
+            .catch((err) => console.log(err))
     }
 }
 
 export const resetUser = () => {
-    return{
+    return {
         type: 'RESET_USER',
     }
 }
 
-export const userReg = (username,email,mobile,password) => {
-    return(dispatch)=>{
+export const userReg = (username, email, mobile, password) => {
+    return (dispatch) => {
         dispatch({
             type: 'LOADING'
         })
-        axios.get('http://localhost:2000/users?username=' + username + '&email=' + email)
-        .then((res)=>{
-            if(res.data.length>0){
-                dispatch({
-                    type: 'EMAIL_REGISTERED'
-                })
-            }
-            else{
-                axios.post('http://localhost:2000/users',
-                {
-                    username: username,
-                    email: email,
-                    mobile: mobile,
-                    password: password
-                })
-                axios.get('http://localhost:2000/users')
-                .then((res)=>dispatch({
-                    type: 'REGISTER_SUCCESS',
-                    payload: username
-                },
-                    objCookie.set('userData',username,{path:'/'})
-                ))
-                .catch((err)=>console.log(err))
-            }
-
+        var newData = { username, email, mobile, password }
+        axios.post('http://localhost:2000/user/register', newData)
+            .then((res) => {
+                if (typeof (res.data) === "string") {
+                    dispatch({
+                        type: 'EMAIL_REGISTERED',
+                        payload: res.data
+                    })
+                }
+                else{
+                    dispatch({
+                        type: 'REGISTER_SUCCESS',
+                        payload: res.data
+                    })
+                }
+                console.log(res.data)                
             })
-    
-        .catch((err)=>dispatch({
-            type: 'SYSTEM ERROR'
-        }))
+            .catch((err) => console.log(err))
+        // axios.get('http://localhost:2000/user?username=' + username + '&email=' + email)
+        // .then((res)=>{
+        //     if(res.data.length>0){
+        //         dispatch({
+        //             type: 'EMAIL_REGISTERED'
+        //         })
+        //     }
+        //     else{
+        //         axios.post('http://localhost:2000/users',
+        //         {
+        //             username: username,
+        //             email: email,
+        //             mobile: mobile,
+        //             password: password
+        //         })
+        //         axios.get('http://localhost:2000/users')
+        //         .then((res)=>dispatch({
+        //             type: 'REGISTER_SUCCESS',
+        //             payload: username
+        //         },
+        //             objCookie.set('userData',username,{path:'/'})
+        //         ))
+        //         .catch((err)=>console.log(err))
+        //     }
+
+        //     })
+
+        // .catch((err)=>dispatch({
+        //     type: 'SYSTEM ERROR'
+        // }))
     }
 }
 
@@ -144,12 +162,12 @@ export const userReg = (username,email,mobile,password) => {
 //         }
 //     })
 //     .catch((err)=>console.log(err))
-    
+
 // }
 // }
 
 export const updateCart = (param) => {
-    return{
+    return {
         type: 'UPDATE_CART',
         payload: param
     }

@@ -14,8 +14,8 @@ class Login extends React.Component {
 
     btnLogin = () => {
         var username = this.refs.username.value
-        var pass = this.refs.password.value
-        this.props.onLogin(username,pass)
+        var password = this.refs.password.value
+        this.props.onLogin(username,password)
     }
 
     renderLoaderOrButton = () => {
