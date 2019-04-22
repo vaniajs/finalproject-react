@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {resetUser,updateCart} from '../1.actions/userActions';
+import ModalCart from './cart';
 import Cookie from 'universal-cookie';
 import '../support/cssheader.css';
 import {Collapse,Navbar,NavbarToggler,NavbarBrand,Nav,NavItem,NavLink,UncontrolledDropdow,DropdownToggle,DropdownMenu,DropdownItem} from 'reactstrap';
@@ -23,11 +24,13 @@ class Header extends React.Component {
     });
   }
   
+  state = {modal:false}
   // componentDidMount(){
   //   Axios.get('http://localhost:2000/cart?idUser=12')
   //   .then((res)=>this.props.cart(res.data.length))
   //   .catch((err)=>console.log(err))
   // }
+
 
   btnLogout = () => {
     objCookie.remove('userData')
@@ -50,7 +53,7 @@ class Header extends React.Component {
             {this.props.username !== '' ?
                 <Nav className="ml-auto" navbar>
                   <NavItem className='bt-link'>
-                    <NavLink className='bt-link' style={styling} className='bt-link'>Welcome, <b>{this.props.username}</b></NavLink>
+                    <NavLink className='bt-link' style={styling} className='bt-link'>Dear, <b>{this.props.username}</b></NavLink>
                   </NavItem>
 
                   {this.props.role === 'admin'?
@@ -59,12 +62,14 @@ class Header extends React.Component {
                 </NavItem>
                 :<NavItem className='bt-link'>
                   
-                <Link to='/login' className='bt-link'><NavLink className='bt-link' style={styling} className='bt-link'><i className="fas fa-shopping-cart"/> {this.props.cart}  </NavLink></Link>
+                <Link to='/login' className='bt-link' onClick={()=>this.setState({modal:true})}><NavLink className='bt-link' style={styling} className='bt-link'><i className="fas fa-shopping-cart"/> {this.props.cart}  </NavLink></Link>
+                {this.state.modal===true?<ModalCart/>:null}
               </NavItem>
+                
               }
                   
                   <NavItem className='bt-link'>
-                    <Link to='/' className='bt-link'><NavLink onClick={this.btnLogout} className='bt-link' style={styling} className='bt-link'><i className="fas fa-sign-in-alt"/> LOGOUT</NavLink></Link>
+                    <Link to='/' className='bt-link'><NavLink onClick={this.btnLogout} className='bt-link' style={styling} className='bt-link'><i className="fas fa-sign-in-alt"/>LOGOUT </NavLink></Link>
                   </NavItem></Nav>
               : 
                 <Nav className="ml-auto float-right" navbar>

@@ -13,7 +13,7 @@ import swal from 'sweetalert';
 
 class ManagePrd extends React.Component{
     state = { rows: [], edit: false, dataEdit:{}, visible:false, visibleEdit: false, selectedFile: null,
-            ctgry:[]}
+            ctgry:[], selectedFileEdit: null, descValueEdit:''}
     
     openModal() {
         this.setState({
@@ -28,6 +28,10 @@ class ManagePrd extends React.Component{
 
     onChangeHandler = (event) => {
         this.setState({selectedFile:event.target.files[0]})
+    }
+
+    onChangeHandlerEdit = (event) => {
+        this.setState({selectedFileEdit:event.target.files[0]})
     }
 
     btnCancel = () => {
@@ -47,6 +51,10 @@ class ManagePrd extends React.Component{
     else {
       this.setState({ selectEDit: 0 })
     }
+    }
+
+    onChangeDescValEdit = (event)=> {
+      this.setState({descValueEdit:event.target.value})
     }
 
     addProduct = () => {
@@ -81,39 +89,41 @@ class ManagePrd extends React.Component{
     }
 
     saveProduct = () => {
+      alert(this.refs.descriptionEdit.value)
         var newData = {
-            product : this.refs.productEdit.value,
-            price : parseInt(this.refs.priceEdit.value),
-            discount : parseInt(this.refs.discountEdit.value),
-            qty : parseInt(this.refs.qtyEdit.value),
-            id_category : this.refs.categoryEdit.value,
-            description : this.refs.descriptionEdit.value
+            product : this.refs.productEdit.value?this.refs.productEdit.value:this.state.dataEdit.product,
+            price : parseInt(this.refs.priceEdit.value)?parseInt(this.refs.priceEdit.value):this.state.dataEdit.price,
+            discount : parseInt(this.refs.discountEdit.value)?parseInt(this.refs.discountEdit.value):this.state.dataEdit.discount,
+            qty : parseInt(this.refs.qtyEdit.value)?parseInt(this.refs.qtyEdit.value):this.state.dataEdit.qty,
+            id_category : this.refs.categoryEdit.value?this.refs.categoryEdit.value:this.state.dataEdit.id_category,
+            description : this.refs.descriptionEdit.value?this.refs.descriptionEdit.value:this.state.dataEdit.description
           }
-        //   if(this.state.selectedFileEdit){
-        //     var fd = new FormData()
-        //     fd.append('edit',this.state.selectedFileEdit)
-        //     fd.append('dataBaru', JSON.stringify(newData))
-        //     //UNTUK DAPETIN PATH YG MAU DIHAPUS
-        //     fd.append('imageBefore', this.state.dataEdit.product_image)
-        //     axios.put('http://localhost:4000/edit/'+this.state.dataEdit.id, fd)
-        //     .then((res)=>{
-        //       console.log(res)
-        //       this.setState({modal:false})
-        //       this.getProduct()
-        //       alert(res.data)
-        //     })
-        //     .catch((err)=>console.log(err))
-        //   }else{
-        //     axios.put('http://localhost:4000/edit/'+this.state.dataEdit.id,newData)
-        //     .then((res)=>{
-        //       console.log(res)
-        //       this.setState({modal:false})
-        //       this.getProduct()
-        //       alert(res.data)
-        //     })
-        //     .catch((err)=>console.log(err))
-        //   }
+          if(this.state.selectedFileEdit){
+            var fd = new FormData()
+            fd.append('edit',this.state.selectedFileEdit)
+            fd.append('dataBaru', JSON.stringify(newData))
+            //UNTUK DAPETIN PATH YG MAU DIHAPUS
+            fd.append('imageBefore', this.state.dataEdit.image)
+            axios.put('http://localhost:2000/products/edit/'+this.state.dataEdit.id, fd)
+            .then((res)=>{
+              console.log(res)
+              this.setState({visibleEdit:false})
+              this.getProduct()
+              alert(res.data)
+            })
+            .catch((err)=>console.log(err))
+          }else{
+            axios.put('http://localhost:2000/products/edit/'+this.state.dataEdit.id,newData)
+            .then((res)=>{
+              console.log(res)
+              this.setState({visibleEdit:false})
+              this.getProduct()
+              alert(res.data)
+            })
+            .catch((err)=>console.log(err))
+          }
     }
+
     getCategory = () => {
         axios.get('http://localhost:2000/products/getCategory')
         .then((res)=>this.setState({ctgry:res.data}))
@@ -131,7 +141,7 @@ class ManagePrd extends React.Component{
 
     getData = () => {
         axios.get('http://localhost:2000/products/getProducts')
-            .then((res) => this.setState({ rows: res.data }))
+            .then((res) => this.setState({rows: res.data}))
             .catch((err) => console.log(err))
     }
 
@@ -147,7 +157,7 @@ class ManagePrd extends React.Component{
                     <td><img src={`http://localhost:2000/${val.image}`} width="80px" /></td>
                     <td>{val.qty}</td>
                     <td>{val.category}</td>
-                    <td><button style={{backgroundColor:"transparent",border:"none"}}><img src="https://images.vexels.com/media/users/3/135542/isolated/preview/c3f24adfeddaed266cc1824b7f44dd9b-button-minus-icon-by-vexels.png" width="25px" onClick={() => this.setState({dataEdit:val, visibleEdit:true})}/></button>
+                    <td><button style={{backgroundColor:"transparent",border:"none"}}><img src="https://images.vexels.com/media/users/3/135542/isolated/preview/c3f24adfeddaed266cc1824b7f44dd9b-button-minus-icon-by-vexels.png" width="25px" onClick={() => this.setState({dataEdit:val, visibleEdit:true,descValueEdit:this.state.dataEdit.description})}/></button>
                     <button style={{backgroundColor:"transparent",border:"none"}}><img src="https://images.vexels.com/media/users/3/135550/isolated/preview/f70c8b85f02b4b2fe33f64aa2b4cd75d-button-stop-close-icon-by-vexels.png" width="25px" onClick={() => this.btnDelete(val.id)}/></button></td>
                 </tr>
                 
@@ -173,7 +183,7 @@ class ManagePrd extends React.Component{
 
             {/* MODAL EDIT PRODUCT */}
             <section>
-            <Modal style={{fontFamily:"Source Sans Pro", overflowY:"auto", maxHeight:"100vh"}}
+            <Modal style={{fontFamily:"Source Sans Pro", position:"absolute", overflow:"auto", maxHeight:"100%"}}
                 visible={this.state.visibleEdit}
                 width="800"
                 height="800"
@@ -182,7 +192,7 @@ class ManagePrd extends React.Component{
             >
             <p className="text-left" style={{margin:"20px",fontWeight:"bold"}}>Edit Product</p>
                     <hr/>
-                    <form>
+        <form>
         <div className="form-group text-left" style={{margin:"20px"}}>
           <label>Product Name</label>
           <input ref="productEdit" type="text" className="form-control" id="exampleFormControlInput1" defaultValue={this.state.dataEdit.product} />
@@ -212,12 +222,12 @@ class ManagePrd extends React.Component{
         </div>
         <div className="form-group text-left" style={{margin:"20px"}}>
           <label>Description</label>
-          <textarea ref="descriptionEdit" className="form-control" rows={3} defaultValue={this.state.dataEdit.description} />
+          <textarea ref="descriptionEdit" className="form-control" style={{overflowY: "scroll"}} rows={2} value={this.state.descValueEdit} onChange={(event)=>this.onChangeDescValEdit(event)}/>
         </div>
         <div className="form-group text-left" style={{margin:"20px"}}>
           <label>Image</label><br/>
           <img src={`http://localhost:2000/${this.state.dataEdit.image}`} width='100px'/>
-          <input type="file" onChange={this.onChangeHandler}/>
+          <input type="file" onChange={this.onChangeHandlerEdit}/>
         </div>
       </form>
       <button onClick={this.saveProduct}>SAVE</button>
@@ -268,7 +278,7 @@ class ManagePrd extends React.Component{
         </div>
         <div className="form-group text-left" style={{margin:"20px"}}>
           <label>Description</label>
-          <textarea ref="description" className="form-control" rows={3} defaultValue={""} />
+          <textarea ref="description" className="form-control" rows={2} style={{overflowY: "scroll"}} defaultValue={""} />
         </div>
         <div className="form-group text-left" style={{margin:"20px"}}>
           <label>Image</label><br/>
