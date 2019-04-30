@@ -108,7 +108,7 @@ class ManagePrd extends React.Component{
             .then((res)=>{
               console.log(res)
               this.setState({visibleEdit:false})
-              this.getProduct()
+              this.getData()
               alert(res.data)
             })
             .catch((err)=>console.log(err))
@@ -117,8 +117,7 @@ class ManagePrd extends React.Component{
             .then((res)=>{
               console.log(res)
               this.setState({visibleEdit:false})
-              this.getProduct()
-              alert(res.data)
+              this.getData()
             })
             .catch((err)=>console.log(err))
           }
@@ -212,17 +211,12 @@ class ManagePrd extends React.Component{
         <div className="form-group text-left" style={{margin:"20px"}}>
           <label>Category</label>
           <select ref="categoryEdit" className="form-control text-left" id="exampleFormControlSelect1">
-            {/* <option value={this.state.dataEdit.category}>{this.state.dataEdit.category}</option> */}
             {this.printCategory()}
-            {/* <option value={this.state.dataEdit.category}>{this.state.dataEdit.category}</option>
-            <option value='Eye'>Eye</option>
-            <option value='Lip'>Lip</option>
-            <option value='Skincare'>Skincare</option> */}
           </select>
         </div>
         <div className="form-group text-left" style={{margin:"20px"}}>
           <label>Description</label>
-          <textarea ref="descriptionEdit" className="form-control" style={{overflowY: "scroll"}} rows={2} value={this.state.descValueEdit} onChange={(event)=>this.onChangeDescValEdit(event)}/>
+          <textarea ref="descriptionEdit" className="form-control" rows="2" value={this.state.descValueEdit} onChange={(event)=>this.onChangeDescValEdit(event)}/>
         </div>
         <div className="form-group text-left" style={{margin:"20px"}}>
           <label>Image</label><br/>

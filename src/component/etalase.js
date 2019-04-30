@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { Card, Icon, Image } from 'semantic-ui-react';
 import { connect } from 'react-redux'
-import { updateCart } from '../1.actions';
+import { cartLength } from '../1.actions/cartActions';
 import swal from 'sweetalert';
 
 class Etalase extends React.Component {
@@ -12,11 +12,11 @@ class Etalase extends React.Component {
 
     componentDidMount() {
         this.getDataApi()
-        axios.get('http://localhost:2000/cart?idUser=' + this.props.id)
-                    .then((res) => {
-                        alert(res.data.length)
-                        this.props.cart(res.data.length)})
-                    .catch((err) => console.log(err))
+        // axios.get('http://localhost:2000/cart?idUser=' + this.props.id)
+        //             .then((res) => {
+        //                 alert(res.data.length)
+        //                 this.props.cart(res.data.length)})
+        //             .catch((err) => console.log(err))
     }
 
     getDataApi = () => {
@@ -36,42 +36,95 @@ class Etalase extends React.Component {
 
     }
 
-    addToCart = (idProduk, idUser, nama, harga, img) => {
-        //return(dispatch)=>{
-        axios.get('http://localhost:2000/cart?idUser=' + idUser + '&idProduk=' + idProduk)
-            .then((res) => {
-                if (res.data.length > 0) {
-                    // var newQty = res.data[0].qty+1
-                    axios.put('http://localhost:2000/cart/' + res.data[0].id, {
-                        idProduk, idUser, nama, harga, img, qty: res.data[0].qty + 1
-                    })
-                        .then((res) => {
-                            console.log(res)
+    addToCart = (id_product, id_user) => {
+        axios.get('http://localhost:2000/cart/getCart?username=' + this.props.username)
+            .then((res)=>{
+                if(res.data.length>0){
+                    axios.get('http://localhost:2000/cart/getIdCart?id_user='+id_user+'&id_product='+id_product)
+                    .then((res)=>{
+                        var qty = 1
+                        axios.put('http://localhost:2000/cart/addQty/'+ res.data[0].id, {qty}
+                        )
+                        .then((res2)=>{
                             swal("ITEM HAS BEEN ADDED TO CART", "Make Payment Soon", "success")
                         })
-                        .catch((err) => console.log(err))
+                        .catch((err)=>console.log(err))
+                    })
+                    .catch((err)=>console.log(err))
                 }
-                else {
-                    axios.post('http://localhost:2000/cart', {
-                        idProduk, idUser, nama, harga, img, qty: 1
+                else{
+                    var data = {
+                        id_user, id_product, qty:1
+                    }
+                    axios.post('http://localhost:2000/cart/newCart', data)
+                    .then((res)=>{
+                        console.log(res)
+                        swal("ITEM HAS BEEN ADDED TO CART", "Make Payment Soon", "success")
                     })
-                        .then((res) => {
-                            console.log(res)
-                            axios.get('http://localhost:2000/cart?idUser='+this.props.id)
-                                .then((res) => {
-                                    this.setState({ cart: res.data })
-                                    this.props.updateCart(this.state.cart.length)
-                                })
-                            swal("ITEM HAS BEEN ADDED TO CART", "Make Payment Soon", "success")
-                        })
-                        .catch((err) => console.log(err))
+                    .catch((err)=>{
+                        console.log(err)
+                    })
                 }
             })
-            .catch((err) => console.log(err))
-
-
-
+            .catch((err)=>console.log(err))
     }
+
+    // addToCart = (id_product, id_user) => {
+    //     axios.get('http://localhost:2000/cart/getCart?username=' + this.props.username)
+    //         .then((res)=>{
+    //             if(res.data.length>0){
+    //                 alert('TRUE')
+    //             }})
+    //         .catch((err)=>console.log(err))
+    //     // var data = {
+    //     //     id_user, id_product, qty:1
+    //     // }
+    //     // axios.post('http://localhost:2000/cart/newCart', data)
+    //     // .then((res)=>{
+    //     //     console.log(res)
+    //     //     this.props.cartLength(this.props.username)
+    //     //     swal("ITEM HAS BEEN ADDED TO CART", "Make Payment Soon", "success")
+    //     // })
+    //     // .catch((err)=>{
+    //     //     console.log(err)
+    //     // })
+    // }
+
+    // addToCart = (idProduk, idUser) => {
+    //     //return(dispatch)=>{
+    //     axios.get('http://localhost:2000/cart?idUser=' + idUser + '&idProduk=' + idProduk)
+    //         .then((res) => {
+    //             if (res.data.length > 0) {
+    //                 // var newQty = res.data[0].qty+1
+    //                 axios.put('http://localhost:2000/cart/' + res.data[0].id, {
+    //                     idProduk, idUser, qty: res.data[0].qty + 1
+    //                 })
+    //                     .then((res) => {
+    //                         console.log(res)
+    //                         swal("ITEM HAS BEEN ADDED TO CART", "Make Payment Soon", "success")
+    //                     })
+    //                     .catch((err) => console.log(err))
+    //             }
+    //             else {
+    //                 axios.post('http://localhost:2000/cart', {
+    //                     idProduk, idUser, qty: 1
+    //                 })
+    //                     .then((res) => {
+    //                         console.log(res)
+    //                         axios.get('http://localhost:2000/cart?idUser='+this.props.id)
+    //                             .then((res) => {
+    //                                 this.setState({ cart: res.data })
+    //                                 this.props.updateCart(this.state.cart.length)
+    //                             })
+    //                         swal("ITEM HAS BEEN ADDED TO CART", "Make Payment Soon", "success")
+    //                     })
+    //                     .catch((err) => console.log(err))
+    //             }
+    //         })
+    //         .catch((err) => console.log(err))
+    // }
+
+
     //}
 
     // addToCart = (idProduk,idUser,nama,harga,img) => {
@@ -88,19 +141,21 @@ class Etalase extends React.Component {
     renderJsx = () => {
         const jsx = this.state.product.map((val) => {
             return (
-                <Card.Group itemsPerRow={4}>
+                <Card.Group className="justify-content-center" itemsPerRow={4} style={{margin:"40px"}}>
                 <Image src={`http://localhost:2000/${val.image}`} width="150px"/>
                 <Card.Content className="text-left mt-1" style={{fontFamily:"Montserrat", fontSize:"12px"}}>
                   <Card.Header>{val.product}</Card.Header>
                   <Card.Meta>Rp {val.price}</Card.Meta>
+                  <Card.Meta onClick={()=>this.addToCart(val.id, this.props.id)} style={{cursor:"pointer"}}>Add to Cart</Card.Meta>
+
                   {/* <Card.Description>{val.description}</Card.Description> */}
                 </Card.Content>
-                <Card.Content extra>
+                {/* <Card.Content extra>
                   <a>
                     <Icon name='user' />
-                    Add to Cart
-                  </a>
-                </Card.Content>
+                    {/* <input type="button" value='Add to Cart' style={{backgroundColor:'none',border:'none'}}/> */}
+                  {/* </a>
+                </Card.Content> */} 
               </Card.Group>
                 // <Card style={{ border: 'none' }} className='col-md-3 ml-3'>
                 //     <Link to={'/product/' + val.id}><Image className='mt-2' src={val.image} width='150px' /></Link>
@@ -159,9 +214,10 @@ class Etalase extends React.Component {
 const mapStateToProps = (state) => {
     return {
         id: state.user.id,
-        cart: state.cart.cart
+        cart: state.cart.cart,
+        username: state.user.username
 
     }
 }
 
-export default connect(mapStateToProps, { updateCart })(Etalase);
+export default connect(mapStateToProps, { cartLength })(Etalase);

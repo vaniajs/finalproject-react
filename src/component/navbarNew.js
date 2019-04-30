@@ -1,15 +1,27 @@
 import React from 'react';
+import {
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  NavbarBrand,
+  Nav,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem } from 'reactstrap';
+import {resetUser} from '../1.actions/userActions';  
+import {cartLength} from '../1.actions/cartActions';  
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import {resetUser} from '../1.actions/userActions';
 import ModalCart from './cart';
+import { connect } from 'react-redux';
 import Cookie from 'universal-cookie';
-import '../support/cssheader.css';
-import {Collapse,Navbar,NavbarToggler,NavbarBrand,Nav,NavItem,NavLink,UncontrolledDropdow,DropdownToggle,DropdownMenu,DropdownItem} from 'reactstrap';
-import Axios from 'axios';
+
 
 const objCookie = new Cookie()
-class Header extends React.Component {
+
+class NavbarNew extends React.Component {
   constructor(props) {
     super(props);
 
@@ -24,13 +36,13 @@ class Header extends React.Component {
     });
   }
   
-  state = {modal:false}
-  // componentDidMount(){
-  //   Axios.get('http://localhost:2000/cart?idUser=12')
-  //   .then((res)=>this.props.cart(res.data.length))
-  //   .catch((err)=>console.log(err))
-  // }
+  componentDidMount(){
+    if(this.props.id){
+      this.props.cartLength(this.props.username)
+    }
+  }
 
+  state = {modal:false}
 
   btnLogout = () => {
     objCookie.remove('userData')
@@ -38,18 +50,15 @@ class Header extends React.Component {
   }
 
   render() {
+    
     const styling = { fontFamily: 'Montserrat', color: "#5C5C5C" , fontSize:'14px'}
-    // const styling = {fontFamily:"Abril Fatface", color:"white", fontWeight:"bold", letterSpacing:"3px"}
     return (
-      <div style={{ marginBottom: "50px" }}>
-        <Navbar fixed="top" expand="md" style={{ backgroundColor: "#FFF9F9", width: "100%" }}>
-          <NavbarBrand href="/" style={styling}><img src='http://s3-ap-southeast-1.amazonaws.com/glints-id-dashboard/job-banner-pic/242365aaf4655ba28403433fff1c44fb.png' width='100px'/> </NavbarBrand>
+      // <div style={{position:"fixed"}}>
+        <Navbar light expand="md" style={{backgroundColor:"#FFF9F9"}} sticky="top">
+          <NavbarBrand href="/"><img src='http://s3-ap-southeast-1.amazonaws.com/glints-id-dashboard/job-banner-pic/242365aaf4655ba28403433fff1c44fb.png' width='100px'/></NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
-            {/* <NavItem className='bt-link'>
-                <Link to='/register' className='bt-link'><NavLink className='bt-link' style={styling}><i className="fas fa-user-plus" /> Register</NavLink></Link>
-              </NavItem> */}
-
+            {/* <Nav className="ml-auto" navbar> */}
             {this.props.username !== '' ?
                 <Nav className="ml-auto" navbar>
                   <NavItem className='bt-link'>
@@ -81,8 +90,7 @@ class Header extends React.Component {
                   </NavItem></Nav>
 
             }
-
-            {/* <UncontrolledDropdown nav inNavbar>
+              {/* <UncontrolledDropdown nav inNavbar>
                 <DropdownToggle nav caret>
                   Options
                 </DropdownToggle>
@@ -99,10 +107,10 @@ class Header extends React.Component {
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown> */}
-            {/* //</Nav> */}
+            {/* </Nav> */}
           </Collapse>
         </Navbar>
-      </div>
+      // </div>
     );
   }
 }
@@ -111,8 +119,9 @@ const mapStateToProps = (state) => {
   return {
     username: state.user.username,
     role: state.user.role,
-    cart: state.cart.cart
+    cart: state.cart.cart,
+    id : state.user.id,
   }
 }
 
-export default connect(mapStateToProps,{resetUser})(Header);
+export default connect(mapStateToProps,{resetUser,cartLength})(NavbarNew);

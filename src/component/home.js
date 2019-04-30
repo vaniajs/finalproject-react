@@ -3,9 +3,14 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 class Home extends React.Component {
+    
+    componentDidMount(){
+
+    }
+    
     render() {
         return (
-            <div className="container" style={{marginTop:"100px"}}>
+            <div className="container" style={{marginTop:"40px"}}>
                 {/* <div className="row"> */}
                     {/* <div className="carousel slide justify-content-end" data-ride="carousel" id="carouselExampleSlidesOnly" > */}
                         <div className="row">
@@ -25,7 +30,8 @@ class Home extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        role: state.user.role
+        role: state.user.role,
+        id: state.user.id
     }
 }
 

@@ -2,6 +2,7 @@ import axios from 'axios';
 import Cookies from 'universal-cookie';
 
 const objCookie = new Cookies()
+// const objCookie2 = new Cookies()
 
 export const onLogin = (username, password) => {
     return (dispatch) => {
@@ -26,7 +27,9 @@ export const onLogin = (username, password) => {
                         //     id: res.data[0].id
                         // }
                     },
-                    objCookie.set('userData', res.data[0].username ,{path:'/'})
+                    objCookie.set('userData', res.data[0].username ,{path:'/'}),
+                    // objCookie2.set('userId', res.data[0].id ,{path:'/'})
+
                     )
                 }
                 else {
@@ -118,6 +121,12 @@ export const userReg = (username, email, mobile, password) => {
         // .catch((err)=>dispatch({
         //     type: 'SYSTEM ERROR'
         // }))
+    }
+}
+
+export const cookieChecked = () => {
+    return {
+        type : 'COOKIE_CHECKED'
     }
 }
 

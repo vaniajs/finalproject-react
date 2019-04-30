@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Link, Redirect } from 'react-router-dom';
 import Loader from 'react-loader-spinner';
 import { onLogin } from './../1.actions/userActions';
+import { cartLength } from './../1.actions/cartActions';
 import '../support/cssform.css';
 import Cookie from 'universal-cookie';
 
@@ -12,10 +13,15 @@ class Login extends React.Component {
         cookie.set('userData',newProps.username,{path:'/'})
     }
 
+    
     btnLogin = () => {
         var username = this.refs.username.value
         var password = this.refs.password.value
         this.props.onLogin(username,password)
+        alert(this.props.id)
+        if(this.props.id!==0){
+            this.props.cartLength(username)
+        }
     }
 
     renderLoaderOrButton = () => {
@@ -27,7 +33,7 @@ class Login extends React.Component {
             width="100"
             />  
         }
-        return <button className="col-md-2 text-center" style={{ border: "none", backgroundColor: "#E16868", borderRadius: "50px", marginTop: "35px", color: "#FFF9F9", height: "40px" }} onClick={this.btnLogin}>LOGIN</button>    
+        return <input type='button' className="col-md-2 text-center" style={{ border: "none", backgroundColor: "#E16868", borderRadius: "50px", marginTop: "35px", color: "#FFF9F9", height: "40px" }} onClick={this.btnLogin} value='LOGIN'></input>    
         
     }
 
@@ -79,9 +85,10 @@ const mapStateToProps = (state) => {
     return{
         username: state.user.username,
         loading: state.user.loading,
-        error: state.user.error
+        error: state.user.error,
+        id: state.user.id
 
     }
 }
 
-export default connect(mapStateToProps,{onLogin})(Login);
+export default connect(mapStateToProps,{onLogin,cartLength})(Login);
