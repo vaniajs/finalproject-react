@@ -12,22 +12,12 @@ class Etalase extends React.Component {
 
     componentDidMount() {
         this.getDataApi()
-        // axios.get('http://localhost:2000/cart?idUser=' + this.props.id)
-        //             .then((res) => {
-        //                 alert(res.data.length)
-        //                 this.props.cart(res.data.length)})
-        //             .catch((err) => console.log(err))
     }
 
     getDataApi = () => {
         axios.get('http://localhost:2000/products/getProducts')
             .then((res) => {
                 this.setState({ product: res.data })
-                // axios.get('http://localhost:2000/cart?idUser=' + this.props.id)
-                //     .then((res) => {
-                //         alert(res.data.length)
-                //         this.props.cart(res.data.length)})
-                //     .catch((err) => console.log(err))
             })
             .catch((err) => console.log(err))
     }
@@ -68,75 +58,6 @@ class Etalase extends React.Component {
             })
             .catch((err)=>console.log(err))
     }
-
-    // addToCart = (id_product, id_user) => {
-    //     axios.get('http://localhost:2000/cart/getCart?username=' + this.props.username)
-    //         .then((res)=>{
-    //             if(res.data.length>0){
-    //                 alert('TRUE')
-    //             }})
-    //         .catch((err)=>console.log(err))
-    //     // var data = {
-    //     //     id_user, id_product, qty:1
-    //     // }
-    //     // axios.post('http://localhost:2000/cart/newCart', data)
-    //     // .then((res)=>{
-    //     //     console.log(res)
-    //     //     this.props.cartLength(this.props.username)
-    //     //     swal("ITEM HAS BEEN ADDED TO CART", "Make Payment Soon", "success")
-    //     // })
-    //     // .catch((err)=>{
-    //     //     console.log(err)
-    //     // })
-    // }
-
-    // addToCart = (idProduk, idUser) => {
-    //     //return(dispatch)=>{
-    //     axios.get('http://localhost:2000/cart?idUser=' + idUser + '&idProduk=' + idProduk)
-    //         .then((res) => {
-    //             if (res.data.length > 0) {
-    //                 // var newQty = res.data[0].qty+1
-    //                 axios.put('http://localhost:2000/cart/' + res.data[0].id, {
-    //                     idProduk, idUser, qty: res.data[0].qty + 1
-    //                 })
-    //                     .then((res) => {
-    //                         console.log(res)
-    //                         swal("ITEM HAS BEEN ADDED TO CART", "Make Payment Soon", "success")
-    //                     })
-    //                     .catch((err) => console.log(err))
-    //             }
-    //             else {
-    //                 axios.post('http://localhost:2000/cart', {
-    //                     idProduk, idUser, qty: 1
-    //                 })
-    //                     .then((res) => {
-    //                         console.log(res)
-    //                         axios.get('http://localhost:2000/cart?idUser='+this.props.id)
-    //                             .then((res) => {
-    //                                 this.setState({ cart: res.data })
-    //                                 this.props.updateCart(this.state.cart.length)
-    //                             })
-    //                         swal("ITEM HAS BEEN ADDED TO CART", "Make Payment Soon", "success")
-    //                     })
-    //                     .catch((err) => console.log(err))
-    //             }
-    //         })
-    //         .catch((err) => console.log(err))
-    // }
-
-
-    //}
-
-    // addToCart = (idProduk,idUser,nama,harga,img) => {
-    //     this.props.addToCart(idProduk,idUser,nama,harga,img)
-    //     axios.get('http://localhost:2000/cart?idUser=12')
-    //     .then((res)=>{
-    //         // this.setState({cart:res.data})
-    //         this.props.updateCart(res.data.length)
-    //         })
-    //     .err((err)=>console.log(err))
-    //     swal ("ITEM HAS BEEN ADDED TO CART","Make Payment Soon","success")
-    // }
 
     renderJsx = () => {
         const jsx = this.state.product.map((val) => {

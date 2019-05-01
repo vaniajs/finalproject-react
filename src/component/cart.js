@@ -42,9 +42,10 @@ class ModalCart extends React.Component {
       var jsx = this.state.cart.map((val)=>{
         return(
           <tr>
+            <td><img src={`http://localhost:2000/${val.image}`} width='50px'/></td>
             <td>{val.product}</td>
             <td>Rp {val.price}</td>
-            <td>{val.discount}% </td>
+            <td>{val.discount}%</td>
             <td>{val.qty}</td>
           </tr>
         )
@@ -68,8 +69,10 @@ class ModalCart extends React.Component {
           //     </Button>
           //   </Modal.Footer>
           // </Modal>
-          <div id='modal-cart' style={{width:"300px",backgroundColor:"#FFF9F9",height:"200px",position:'absolute',top:"50px",right:"25px"}}>
-              <table>
+          <div id='modal-cart' style={{width:"400px",backgroundColor:"#FFF9F9",position:'absolute',top:"50px",right:"25px"}}>
+              <p>Cart</p>
+              <table className='text-left' style={{fontSize:'12px', margin:'15px'}}>
+                
                 {this.renderCart()}
               </table>
           </div>
