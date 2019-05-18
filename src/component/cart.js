@@ -1,28 +1,9 @@
 import React from 'react';
 import '../support/cssheader.css';
-import {connect} from 'react-redux'
-import {Modal,Button} from 'react-bootstrap';
+import {connect} from 'react-redux';
 import Axios from 'axios';
 
 class ModalCart extends React.Component {
-    // constructor(props, context) {
-    //   super(props, context);
-  
-    //   this.handleShow = this.handleShow.bind(this);
-    //   this.handleClose = this.handleClose.bind(this);
-  
-    //   this.state = {
-    //     show: true,
-    //   };
-    // }
-  
-    // handleClose() {
-    //   this.setState({ show: false });
-    // }
-  
-    // handleShow() {
-    //   this.setState({ show: true });
-    // }
 
     state = {cart:[]}
 
@@ -42,7 +23,7 @@ class ModalCart extends React.Component {
       var jsx = this.state.cart.map((val)=>{
         return(
           <tr>
-            <td><img src={`http://localhost:2000/${val.image}`} width='50px'/></td>
+            <td><img src={`http://localhost:2000/${val.image}`} width='50px' alt='img-prd'/></td>
             <td>{val.product}</td>
             <td>Rp {val.price}</td>
             <td>{val.discount}%</td>
@@ -72,8 +53,10 @@ class ModalCart extends React.Component {
           <div id='modal-cart' style={{width:"400px",backgroundColor:"#FFF9F9",position:'absolute',top:"50px",right:"25px"}}>
               <p>Cart</p>
               <table className='text-left' style={{fontSize:'12px', margin:'15px'}}>
-                
                 {this.renderCart()}
+                {/* <tr>
+                  <td className='text-right'><input type='button' value='CheckOut' className='mt-2' style={{border:'none', borderRadius:'10px', backgroundColor:'#E16868', color:'#FFF9F9'}}/></td>
+                </tr> */}
               </table>
           </div>
       );

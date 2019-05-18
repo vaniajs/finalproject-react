@@ -1,32 +1,31 @@
 import React, { Component } from 'react';
 import Header from './component/navbarNew';
-import LandingPage from './component/landingPage';
 import Home from './component/home';
 import Footer from './component/footer';
 import Sidebar from './component/sidebarMenu';
-import Search from './component/search';
 import Register from './component/register';
 import Login from './component/login';
 import Etalase from './component/etalase';
+import Face from './component/etalaseFace';
+import Eye from './component/etalaseEye';
+import Lip from './component/etalaseLip';
+import Skin from './component/etalaseSkin';
 import ManageProduct from './component/manageProduct4';
-import ProductDetail from './component/productDetail';
+import ProductDetail from './component/productDetail2';
+import CartDetail from './component/cartDetail';
+import HistoryDetail from './component/history';
+
 import Verify from './component/verify';
 import Verified from './component/verified';
 import { keepLogin, cartLength, cookieChecked} from './1.actions'
 import { connect } from 'react-redux';
-import axios from 'axios';
 import { Route , withRouter , Switch } from 'react-router-dom';
 import Cookie from 'universal-cookie';
 import Loader from 'react-loader-spinner';
-import Cart from './component/cart'
 import './support/cssheader.css';
 import './support/font.css';
 import './support/cssbackground.css';
-
 import './App.css';
-import { register } from './serviceWorker';
-import productDetail from './component/productDetail';
-import sidebarMenu from './component/sidebarMenu';
 
 
 const objCookie = new Cookie()
@@ -49,42 +48,35 @@ class App extends Component {
     this.setState({pathName:newProps.location.pathname})
   }
 
-
-  // getDataCart = (a) => {
-  //   axios.get('http://localhost:2000/user?username='+a)
-  //   .then((res)=>{
-  //     axios.get('http://localhost:2000/cart?idUser='+res.data[0].id)
-  //     .then((res)=>{
-  //       //console.log('masuk')
-  //       // this.setState({cart:res.data})
-  //       this.props.cart(res.data.length)
-  //     })
-  //     .catch((err)=>console.log(err))
-  //   })
-  //   .catch((err)=>console.log(err))
-
-  // }
   render() {
     if(this.props.cookie){
       return (
         <div className="App">
           <Header />
           {
-            this.state.pathName==='/manage-product' || this.state.pathName==='/verify' || this.state.pathName==='/register' || this.state.pathName==='/login' ?null
+            this.state.pathName==='/manage-product' || this.state.pathName==='/verify' || this.state.pathName==='/register' || this.state.pathName==='/login' || this.state.pathName==='/cart-detail' || this.state.pathName==='/history' ? null
             :        <Sidebar />
           }
-          {
-            this.state.pathName==='/manage-product' || this.state.pathName==='/verify' || this.state.pathName==='/register' || this.state.pathName==='/login' ?null
+          {/* {
+            this.state.pathName==='/manage-product' || this.state.pathName==='/verify' || this.state.pathName==='/register' || this.state.pathName==='/login' || this.state.pathName==='/cart-detail'?null
             :        <Search />
 
-          }
+          } */}
           
           <Route path="/" component={Home} exact />
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login}/>
           <Route path="/featured-products" component={Etalase}/>
+          <Route path="/face" component={Face} exact />
+          <Route path="/eye" component={Eye} exact />
+          <Route path="/lip" component={Lip} exact />
+          <Route path="/skincare" component={Skin} exact />
+
           <Route path="/manage-product" component={ManageProduct}/>
-          <Route path="/product/:id" component={ProductDetail}/>
+          <Route path="/product-detail/:id" component={ProductDetail}/>
+          <Route path="/cart-detail" component={CartDetail}/>
+          <Route path="/history" component={HistoryDetail}/>
+
           <Route path="/verify" component={Verify} exact />
           <Route path="/verified" component={Verified} exact />
 

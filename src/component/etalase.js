@@ -1,104 +1,139 @@
 import React from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { Card, Icon, Image } from 'semantic-ui-react';
+import { Card, Image } from 'semantic-ui-react';
 import { connect } from 'react-redux'
 import { cartLength } from '../1.actions/cartActions';
 import swal from 'sweetalert';
 
 class Etalase extends React.Component {
 
-    state = { product: [], cart: [] }
+    state = { product: [], cart: [], dataFilter: [], searchFilter: '' }
 
     componentDidMount() {
         this.getDataApi()
     }
 
+    // componentWillReceiveProps(){
+    //     this.searchFn()
+    // }
+
     getDataApi = () => {
-        axios.get('http://localhost:2000/products/getProducts')
+        axios.get('http://localhost:2000/products/featuredProducts')
             .then((res) => {
                 this.setState({ product: res.data })
             })
             .catch((err) => console.log(err))
     }
 
-    btnSearch = () => {
-
+    searchFn = () => {
+        this.setState({searchFilter: this.refs.search.value})
     }
+    // searchFn = () => {
+    //     alert(this.refs.search.value)
+    //     var keyword = this.refs.search.value
+    //     axios.get('http://localhost:2000/products/filter?keyword='+keyword)
+    //     .then((res)=>{
+    //         console.log(res)
+    //         this.setState({dataFilter:res.data})
+    //     })
+    //     .catch((err)=>console.log(err))
+    // }
 
-    addToCart = (id_product, id_user) => {
-        axios.get('http://localhost:2000/cart/getCart?username=' + this.props.username)
-            .then((res)=>{
-                if(res.data.length>0){
-                    axios.get('http://localhost:2000/cart/getIdCart?id_user='+id_user+'&id_product='+id_product)
-                    .then((res)=>{
-                        var qty = 1
-                        axios.put('http://localhost:2000/cart/addQty/'+ res.data[0].id, {qty}
-                        )
-                        .then((res2)=>{
-                            swal("ITEM HAS BEEN ADDED TO CART", "Make Payment Soon", "success")
+    addToCart = (id_product, id_user, idx) => {
+        axios.get('http://localhost:2000/cart/getCart?username=' + this.props.username + '&id_product=' +id_product)
+            .then((res) => {
+                if (res.data.length > 0) {
+                    axios.get('http://localhost:2000/cart/getIdCart?id_user=' + id_user + '&id_product=' + id_product)
+                        .then((res2) => {
+                            if(res2.data.length>0){
+                            var qty = 1
+                            axios.put('http://localhost:2000/cart/addQty/' + res.data[0].id, { qty }
+                            )
+                                .then((res2) => {
+                                    swal(`${this.state.product[idx].product}`,"HAS BEEN ADDED TO CART", "success")
+                                    this.props.cartLength(this.props.username)
+                                })
+                                .catch((err) => console.log(err))
+                            }
+                            else{
+                                var data = {
+                                    id_user, id_product, qty: 1
+                                }
+                                axios.post('http://localhost:2000/cart/newCart', data)
+                                    .then((res) => {
+                                        console.log(res)
+                                        swal(`${this.state.product[idx].product}`,"HAS BEEN ADDED TO CART", "success")
+                                        this.props.cartLength(this.props.username)
+
+                                    })
+                                    .catch((err) => {
+                                        console.log(err)
+                                    })
+                            }
                         })
-                        .catch((err)=>console.log(err))
-                    })
-                    .catch((err)=>console.log(err))
+                        .catch((err) => console.log(err))
                 }
-                else{
+                else {
                     var data = {
-                        id_user, id_product, qty:1
+                        id_user, id_product, qty: 1
                     }
                     axios.post('http://localhost:2000/cart/newCart', data)
-                    .then((res)=>{
-                        console.log(res)
-                        swal("ITEM HAS BEEN ADDED TO CART", "Make Payment Soon", "success")
-                    })
-                    .catch((err)=>{
-                        console.log(err)
-                    })
+                        .then((res) => {
+                            console.log(res)
+                            swal(`${this.state.product[idx].product}`,"HAS BEEN ADDED TO CART", "success")
+                            this.props.cartLength(this.props.username)
+
+                        })
+                        .catch((err) => {
+                            console.log(err)
+                        })
                 }
             })
-            .catch((err)=>console.log(err))
+            .catch((err) => console.log(err))
     }
 
+
     renderJsx = () => {
-        const jsx = this.state.product.map((val) => {
+        var searchFilter = this.state.product.filter((val=>{
+            return(val.product.toLowerCase().startsWith(this.state.searchFilter))
+        }))
+        const jsx = searchFilter.map((val,idx) => {
             return (
-                <Card.Group className="justify-content-center" itemsPerRow={4} style={{margin:"40px"}}>
-                <Image src={`http://localhost:2000/${val.image}`} width="150px"/>
-                <Card.Content className="text-left mt-1" style={{fontFamily:"Montserrat", fontSize:"12px"}}>
-                  <Card.Header>{val.product}</Card.Header>
-                  <Card.Meta>Rp {val.price}</Card.Meta>
-                  <Card.Meta onClick={()=>this.addToCart(val.id, this.props.id)} style={{cursor:"pointer"}}>Add to Cart</Card.Meta>
+                <Card.Group className="justify-content-center" itemsPerRow={4} style={{ margin: "40px" }}>
+                    <Link to ={'/product-detail/'+val.id}><Image src={`http://localhost:2000/${val.image}`} width="150px"/></Link>
+                    <Card.Content className="text-left mt-1" style={{ fontFamily: "Montserrat", fontSize: "12px" }}>
+                        {/* <Card.Header>{val.id}</Card.Header> */}
+                        <Card.Header>{val.product}</Card.Header>
+                        <Card.Meta>Rp {val.price}</Card.Meta>
+                        {
+                            this.props.id !== 0 ?
+                                <Card.Meta onClick={() => this.addToCart(val.id, this.props.id, idx)} style={{ cursor: "pointer" }}>Add to Cart</Card.Meta>
+                                : null
+                        }
+                    </Card.Content>
+                </Card.Group>
+            )
+        })
+        return jsx
+    }
 
-                  {/* <Card.Description>{val.description}</Card.Description> */}
-                </Card.Content>
-                {/* <Card.Content extra>
-                  <a>
-                    <Icon name='user' />
-                    {/* <input type="button" value='Add to Cart' style={{backgroundColor:'none',border:'none'}}/> */}
-                  {/* </a>
-                </Card.Content> */} 
-              </Card.Group>
-                // <Card style={{ border: 'none' }} className='col-md-3 ml-3'>
-                //     <Link to={'/product/' + val.id}><Image className='mt-2' src={val.image} width='150px' /></Link>
-                //     <Card.Content className='text-left mt-2' >
-                //         <Card.Header className='mt-2' style={{ fontSize: '12px', fontWeight: '600', color: '#5C5C5C', backgroundColor: 'transparent', fontFamily: "Montserrat" }}>{val.product}</Card.Header>
-                //         {
-                //             val.diskon === 0 ?
-                //                 <Card.Meta className='mb-3' style={{ color: '#E16868', fontWeight: '600', fontFamily: "Montserrat", fontSize: '14px' }}>Rp {val.price},00</Card.Meta>
-                //                 :
-                //                 <div><Card.Meta style={{ color: '#E16868', fontWeight: '600', fontFamily: "Montserrat", fontSize: '14px' }}>Rp {val.price - (val.price * val.discount / 100)},00</Card.Meta>
-                //                     <Card.Meta style={{ fontSize: '13px' }}><s><i>Rp {val.price},00</i></s>
-                //                         <p className='d-inline ml-2' style={{ backgroundColor: '#E16868', color: 'white', paddingRight: '2px', fontFamily: "Montserrat" }}> {val.discount}%</p></Card.Meta></div>
-                //         }
-
-                //     </Card.Content>
-                //     <Card.Content extra>
-                //         {/* <button className='float-left mt-2' style={{border:'none',borderRadius:'50px',paddingLeft:'18px', paddingRight:'18px',backgroundColor:'#ff1493',color:'white'}}> */}
-                //         <button onClick={() => this.addToCart(val.id, this.props.id, val.nama, val.harga, val.img, val.diskon)} className='float-left mt-2 mb-2' style={{ fontFamily: "Montserrat", border: 'none', fontSize: '12px', fontWeight: '100', paddingLeft: '0px', color: '#E16868', backgroundColor: 'transparent' }}>
-                //             Add to Cart <i className="fas fa-shopping-cart" />
-                //         </button>
-                //     </Card.Content>
-                // </Card>
+    renderDataFilter = () => {
+        const jsx = this.state.dataFilter.map((val) => {
+            return (
+                <Card.Group className="justify-content-center" itemsPerRow={4} style={{ margin: "40px" }}>
+                    <Link to ={'/product-detail/'+val.id}><Image src={`http://localhost:2000/${val.image}`} width="150px"/></Link>
+                    <Card.Content className="text-left mt-1" style={{ fontFamily: "Montserrat", fontSize: "12px" }}>
+                        {/* <Card.Header>{val.id}</Card.Header> */}
+                        <Card.Header>{val.product}</Card.Header>
+                        <Card.Meta>Rp {val.price}</Card.Meta>
+                        {
+                            this.props.id !== 0 ?
+                                <Card.Meta onClick={() => this.addToCart(val.id, this.props.id)} style={{ cursor: "pointer" }}>Add to Cart</Card.Meta>
+                                : null
+                        }
+                    </Card.Content>
+                </Card.Group>
             )
         })
         return jsx
@@ -106,28 +141,29 @@ class Etalase extends React.Component {
 
     render() {
         return (
-            <div className="container" style={{marginTop:"100px"}}>
-                <div className="row">
-                {this.renderJsx()}
-                </div>
-            </div>
+            <div>
+               
+            <div className="container-fluid row" style={{ marginTop: "100px", marginLeft:'200px', marginRight:'200px', maxWidth:'1200px', marginBottom:'200px' }}>
+          
+            {/* {
+                this.state.dataFilter ? this.renderDataFilter()
+                :
+                this.renderJsx()
+                
+            }  */}
+            {this.renderJsx()}
 
-            // <div className='container mt-4' style={{ marginBottom: '100px' }}>
-            //     {/* <div className='mb-3 justify-content-end' style={{width:'120px' , padding:'5px', fontSize:'18px',color:'white',fontWeight:'bolder',backgroundColor:'#ff1493'}}><center>HOT ITEMS</center></div> */}
-            //     <div className='row justify-content-end'>
-            //         <div className='col-md-3'>
-            //             <i className="fas fa-search ml-3" style={{ marginTop: '12px', position: "absolute" }} /><input type='text' placeholder='       Search' style={{ position: "relative", padding: '8px', border: 'none', borderRadius: '50px', backgroundColor: '#FFF9F9', color: "#5C5C5C" }} onChange={this.btnSearch} />
-            //         </div>
-            //         <div className='col-md-9'>
-            //             <div className='row'>
-            //                 <div className='ml-3 mb-3 justify-content-end' style={{ width: '120px', padding: '5px', fontSize: '18px', color: 'white', fontWeight: '800', backgroundColor: '#E16868' }}><center>HOT ITEMS</center></div>
-            //             </div>
-            //             <div className='row'>
-            //                 {this.renderJsx()}
-            //             </div>
-            //         </div>
-            //     </div>
-            // </div>
+            {/* <p className='text-left' style={{marginLeft:'30px'}}>Featured Products</p> */}
+                {/* <div className="row" style={{marginBottom:'30px'}}> */}
+                <div style={{ alignItems:'right', position:'fixed' ,marginTop: "0px", marginLeft: '1200px', fontFamily: 'Montserrat', color: "#5C5C5C", fontSize: '14px' }}>
+                        <div className="p-2">Search</div>
+                        <input type="text" ref='search' className="text-center" style={{ border: "none", backgroundColor: "#E16868", borderRadius: "50px", color: "white", height: "40px" }} placeholder="type your search" onChange={this.searchFn} />
+                    </div>
+                {/* </div> */}
+            </div>
+           
+            </div>
+            
         )
     }
 }

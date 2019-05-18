@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from 'react-redux';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import Loader from 'react-loader-spinner';
 import { onLogin } from './../1.actions/userActions';
 import { cartLength } from './../1.actions/cartActions';
@@ -18,7 +18,7 @@ class Login extends React.Component {
         var username = this.refs.username.value
         var password = this.refs.password.value
         this.props.onLogin(username,password)
-        alert(this.props.id)
+        // alert(this.props.id)
         if(this.props.id!==0){
             this.props.cartLength(username)
         }

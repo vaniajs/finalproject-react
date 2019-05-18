@@ -1,11 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import {cartLength} from '../1.actions/cartActions';  
+import carousel from './../picts/carousel.gif';
 
 class Home extends React.Component {
     
     componentDidMount(){
-
+        if(this.props.id){
+            this.props.cartLength(this.props.username)
+          }
     }
     
     render() {
@@ -15,7 +19,7 @@ class Home extends React.Component {
                     {/* <div className="carousel slide justify-content-end" data-ride="carousel" id="carouselExampleSlidesOnly" > */}
                         <div className="row">
                             <div className="col-md-8">
-                                <img className="w-40" src="https://images.ctfassets.net/p3w8f4svwgcg/1aipO8NVSjJvkyChGPXro6/fc56517e5ef3f51a362f3da9760fc396/SkincareSet_IMG_1.jpg?w=555&h=701&q=80" alt="First slide" />
+                                <img className="w-40" src={carousel} alt="GIF" />
                                     <h1 className="text-left" style={{fontFamily: "Playfair Display",  fontWeight:"bolder", fontStyle:"italic", zIndex: 1, marginLeft:"520px", marginTop: "-400px", position: "fixed" }}>Skin First. <br/>Makeup Second. <br/>Smile Always :)</h1>
                             </div>
                             <div className="col-md-4">
@@ -31,9 +35,10 @@ class Home extends React.Component {
 const mapStateToProps = (state) => {
     return {
         role: state.user.role,
-        id: state.user.id
+        id: state.user.id,
+        username: state.user.username
     }
 }
 
-export default connect(mapStateToProps)(Home);
+export default connect(mapStateToProps,{cartLength})(Home);
 

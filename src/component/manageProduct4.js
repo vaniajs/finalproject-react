@@ -4,16 +4,15 @@ import axios from 'axios';
 import Modal from 'react-awesome-modal';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Table } from 'reactstrap';
-import {
-  Button,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  FormText
-} from 'reactstrap';
 import swal from 'sweetalert';
+import AddBtn from './../support/icon/add.png';
+import EditBtn from './../support/icon/edit.png';
+import DelBtn from './../support/icon/delete.png';
+import prev from './../support/icon/prev.png';
+import next from './../support/icon/next.png';
+
+
+
 
 class ManagePrd extends React.Component {
   state = {
@@ -28,7 +27,8 @@ class ManagePrd extends React.Component {
     descValueEdit: '',
     currentIndex: null,
     visibleCat: false,
-    dltBtn : false
+    dltBtn: false,
+    page:1
   }
 
   openModal() {
@@ -91,27 +91,27 @@ class ManagePrd extends React.Component {
   }
 
   addCategory = () => {
-    axios.post('http://localhost:2000/products/addCategory',{
-      category:this.refs.newcategory.value
+    axios.post('http://localhost:2000/products/addCategory', {
+      category: this.refs.newcategory.value
     })
-    .then((res)=>{
-      this.getCategory()
-      swal("NEW CATEGORY","has been added", "success")
-      this.refs.newcategory.value=''
-    })
-    .catch((err)=>console.log(err))
+      .then((res) => {
+        this.getCategory()
+        swal("NEW CATEGORY", "has been added", "success")
+        this.refs.newcategory.value = ''
+      })
+      .catch((err) => console.log(err))
   }
 
   deleteCategory = () => {
     var category = this.refs.categorylist.value
     var yes = window.confirm(`Are you sure you want to delete this from category list?`)
-    if(yes){
-      axios.delete('http://localhost:2000/products/deleteCategory/'+category)
-      .then((res)=>{
-        this.getCategory()
-        swal("CATEGORY","has been deleted", "success")
-      })
-      .catch((err)=>console.log(err))
+    if (yes) {
+      axios.delete('http://localhost:2000/products/deleteCategory/' + category)
+        .then((res) => {
+          this.getCategory()
+          swal("CATEGORY", "has been deleted", "success")
+        })
+        .catch((err) => console.log(err))
     }
   }
 
@@ -202,7 +202,7 @@ class ManagePrd extends React.Component {
 
   getData = () => {
     axios
-      .get('http://localhost:2000/products/getProducts')
+      .get('http://localhost:2000/products/getProducts/'+this.state.page)
       .then((res) => this.setState({ rows: res.data }))
       .catch((err) => console.log(err))
   }
@@ -214,8 +214,6 @@ class ManagePrd extends React.Component {
       this.setState({ dataEdit: val, visibleEdit: true })
     }
   }
-
-
 
   printData = () => {
     var jsx = this
@@ -239,7 +237,7 @@ class ManagePrd extends React.Component {
                   width: "400px"
                 }}>{val.description}</div>
             </td>
-            <td><img src={`http://localhost:2000/${val.image}`} width="80px" /></td>
+            <td><img src={`http://localhost:2000/${val.image}`} width="75px" alt='img-prd' /></td>
             <td>{val.qty}</td>
             <td>{val.category}</td>
             <td>
@@ -248,17 +246,17 @@ class ManagePrd extends React.Component {
                   backgroundColor: "transparent",
                   border: "none"
                 }}><img
-                  src="https://images.vexels.com/media/users/3/135542/isolated/preview/c3f24adfeddaed266cc1824b7f44dd9b-button-minus-icon-by-vexels.png"
-                  width="25px"
-                  onClick={() => this.handleEditClick(val, index)} /></button>
+                  src={EditBtn}
+                  width="20px"
+                  onClick={() => this.handleEditClick(val, index)} alt='btn'/></button>
               <button
                 style={{
                   backgroundColor: "transparent",
                   border: "none"
                 }}><img
-                  src="https://images.vexels.com/media/users/3/135550/isolated/preview/f70c8b85f02b4b2fe33f64aa2b4cd75d-button-stop-close-icon-by-vexels.png"
-                  width="25px"
-                  onClick={() => this.btnDelete(val.id)} /></button>
+                  src={DelBtn}
+                  width="20px"
+                  onClick={() => this.btnDelete(val.id)} alt='btn'/></button>
             </td>
           </tr>
 
@@ -267,12 +265,24 @@ class ManagePrd extends React.Component {
     return jsx
   }
 
+  btnPageNext = () => {
+    this.setState({page:this.state.page+1})
+    this.getData()
+  }
+
+  btnPagePrev = () => {
+    if(this.state.page>=1){
+      this.setState({page:this.state.page-1})
+      this.getData()
+    }
+    
+  }
   render() {
     if (this.props.role === "admin") {
 
       return (
         <div className="container" style={{
-          marginTop: "100px", marginBottom: "150px"
+          marginTop: "20px", marginBottom: "0px"
         }}>
 
           <div className="row justify-content-end mb-2">
@@ -285,8 +295,8 @@ class ManagePrd extends React.Component {
                 fontSize: "13px",
                 fontWeight: "bold"
               }}>Add New Product</span><img
-              src="https://images.vexels.com/media/users/3/135544/isolated/preview/23724deafa9e7ec5830d49438d3e3f9f-colorful-button-more-add-icon-by-vexels.png"
-              width="25px" height='25px' onClick={() => this.setState({ visible: true })} style={{ cursor: 'pointer' }} className='mr-2' />
+              src={AddBtn}
+              width="20px" height='20px' onClick={() => this.setState({ visible: true })} style={{ cursor: 'pointer' }} className='mr-2' alt='btn'/>
             <span
               className="mr-1"
               style={{
@@ -295,8 +305,8 @@ class ManagePrd extends React.Component {
                 fontSize: "13px",
                 fontWeight: "bold"
               }}>Add Category</span><img
-              src="https://images.vexels.com/media/users/3/135544/isolated/preview/23724deafa9e7ec5830d49438d3e3f9f-colorful-button-more-add-icon-by-vexels.png"
-              width="25px" height='25px' onClick={() => this.setState({ visibleCat: true })} style={{ cursor: 'pointer' }} className='mr-2' />
+              src={AddBtn}
+              width="20px" height='20px' onClick={() => this.setState({ visibleCat: true })} style={{ cursor: 'pointer' }} className='mr-2' alt='btn'/>
           </div>
 
           {/* MODAL EDIT PRODUCT */}
@@ -402,7 +412,7 @@ class ManagePrd extends React.Component {
                     margin: "20px"
                   }}>
                   <label>Image</label><br />
-                  <img src={`http://localhost:2000/${this.state.dataEdit.image}`} width='100px' />
+                  <img src={`http://localhost:2000/${this.state.dataEdit.image}`} width='100px' alt='btn'/>
                   <input type="file" onChange={this.onChangeHandlerEdit} />
                 </div>
               </form>
@@ -558,14 +568,15 @@ class ManagePrd extends React.Component {
                 </div>
 
                 <div class="form-group text-left" style={{
-                  margin: "20px"}}>
+                  margin: "20px"
+                }}>
                   <label>Category List</label>
-                  <select ref='categorylist' multiple class="form-control" onChange={()=>this.setState({dltBtn:true})}>
+                  <select ref='categorylist' multiple class="form-control" onChange={() => this.setState({ dltBtn: true })}>
                     {this.printCategory()}
                   </select>
                 </div>
               </form>
-              <input type='button' className='mr-3' onClick={this.addCategory} value='Add'/>
+              <input type='button' className='mr-3' onClick={this.addCategory} value='Add' />
               {
                 this.state.dltBtn ? <input type='button' onClick={this.deleteCategory} value='Delete' /> : <input type='button' onClick={this.deleteCategory} value='Delete' disabled />
               }
@@ -573,7 +584,7 @@ class ManagePrd extends React.Component {
             </Modal>
           </section>
 
-          <div className="row mb-4">
+          <div className="row">
             <table className="col-md-12 col-12 table text-left">
               <tr style={{
                 fontWeight: "bolder"
@@ -589,8 +600,11 @@ class ManagePrd extends React.Component {
               </tr>
               {this.printData()}
             </table>
-
           </div>
+          <div className='d-flex justify-content-center' style={{marginTop:'-10px'}}>
+              <img width='30px' height='30px' src={prev} className='mr-4' style={{cursor:'pointer'}} onClick={this.btnPagePrev} alt='btn'/>
+              <img width='30px' height='30px' src={next} className='ml-4' style={{cursor:'pointer'}} onClick={this.btnPageNext} alt='btn'/>
+              </div>
         </div>
       )
     } else {
