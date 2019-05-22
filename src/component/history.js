@@ -8,7 +8,7 @@ import Modal from 'react-awesome-modal';
 class HistoryDetail extends React.Component {
     state = { historyTrans: [], pendingTrans: [], history: true, pending: false, 
                 modalHistory: false,
-                detailHistory: [] }
+                detail: [], selectedInvoice : '', modalPay: false, selectedFile:'' }
 
     componentDidMount() {
         this.getPendingTrans()
@@ -31,18 +31,51 @@ class HistoryDetail extends React.Component {
             .catch((err) => console.log(err))
     }
 
-
     btnDetailTrans = (invoice) => {
         this.setState({modalHistory:true})
         Axios.get('http://localhost:2000/checkout/detailHistory?invoice=' + invoice)
         .then((res)=>{
-            this.setState({detailHistory:res.data})
+            this.setState({detail:res.data, selectedInvoice:invoice})
         })
         .catch((err)=>{
             console.log(err)
         })
     }
 
+    btnDetail = (invoice) => {
+        this.setState({modalHistory:true})
+        Axios.get('http://localhost:2000/checkout/detailPending?invoice=' + invoice)
+        .then((res)=>{
+            this.setState({detail:res.data, selectedInvoice:invoice})
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
+
+   
+    btnPay = (invoice) => {
+        this.setState({modalPay:true})
+        Axios.get('http://localhost:2000/checkout/detailPending?invoice=' + invoice)
+        .then((res)=>{
+            this.setState({detail:res.data, selectedInvoice:invoice})
+        })
+        .catch((err)=>{
+            console.log(err)
+        })
+    }
+
+    renderPayment = () => {
+        var jsx = this.state.detail.map((val)=>{
+            return(
+                <tbody>
+                <tr>{val.product} {val.qty}pc</tr>
+                </tbody>
+
+            )
+        })
+        return jsx
+    }
 
     renderPending = () => {
         var jsx = this.state.pendingTrans.map((val, index) => {
@@ -51,13 +84,15 @@ class HistoryDetail extends React.Component {
                     <td>{val.invoice}</td>
                     <td></td>
                     <td>Rp {val.total}</td>
-                    <td><input type='button' value='Detail Checkout' className='mt-2' style={{ border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px' }} onClick={() => this.btnDetail(val.invoice)} />
-                        <input type='button' value='Pay Now' className='mt-2' style={{ margin: 'auto', order: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={this.btnConfirm} /></td>
+                    <td><input type='button' value='Detail Checkout' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px' }} onClick={() => this.btnDetail(val.invoice)} />
+                        <input type='button' value='Pay Now' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={()=>this.btnPay(val.invoice)} /></td>
                 </tr>
             )
         })
         return jsx
     }
+
+   
 
     renderHistory = () => {
         var jsx = this.state.historyTrans.map((val, index) => {
@@ -74,37 +109,10 @@ class HistoryDetail extends React.Component {
         return jsx
     }
 
-    renderDetailHistory = () => {
-        var jsx = this.state.detailHistory.map((val)=>{
+    renderDetail = () => {
+        var jsx = this.state.detail.map((val)=>{
             return(
-                <Modal
-                style={{
-                  fontFamily: "Source Sans Pro",
-                  overflowY: "auto",
-                  maxHeight: "100vh"
-                }}
-                visible={this.state.modalHistory}
-                width="1000"
-                height="500"
-                effect="fadeInUp"
-                onClickAway={() => this.setState({ modalHistory: false })}>
-                <p
-                  className="text-left"
-                  style={{
-                    margin: "20px",
-                    fontWeight: "bold"
-                  }}>No Invoice {val.invoice}</p>
-                <table className='table text-left' style={{margin:'20px'}}>
-                    <thead>
-                        <tr>
-                            <td></td>
-                            <td>Product</td>
-                            <td>Price</td>
-                            <td>Discount</td>
-                            <td>Qty</td>
-                            <td>Total</td> 
-                        </tr>
-                    </thead>
+         
                     <tbody>
                         <tr>
                             <td><img src={`http://localhost:2000/${val.image}`} width='50px' alt='prd-img'/></td>
@@ -122,9 +130,6 @@ class HistoryDetail extends React.Component {
 
                         </tr>
                     </tbody>
-                </table>
-    
-              </Modal>
             )
         })
         return jsx
@@ -132,13 +137,30 @@ class HistoryDetail extends React.Component {
 
     totalPrint = () => {
         var total = 0
-        for (var i = 0; i < this.state.cart.length; i++) {
-            total += ((this.state.cart[i].price - (this.state.cart[i].discount / 100 * this.state.cart[i].price)) * this.state.cart[i].qty)
+        for (var i = 0; i < this.state.detail.length; i++) {
+            total += ((this.state.detail[i].price - (this.state.detail[i].discount / 100 * this.state.detail[i].price)) * this.state.detail[i].qty)
         }
         return total
     }
 
+    onChangeHandler = (event) => {
+        this.setState({ selectedFile: event.target.files[0] })
+      }
+      
 
+    btnUpload = (invoice) => {
+          var formData = new FormData()
+          formData.append('payment', this.state.selectedFile, this.state.selectedFile.name)
+          Axios.get('http://localhost:2000/checkout?='+invoice)
+          Axios
+            .put('http://localhost:2000/checkout/payment?invoice='+invoice, formData)
+            .then((res) => {
+              console.log(res.data)
+              this.setState({ modalPay: false, selectedFile:'' })
+              swal('Upload Success!', 'Your transaction will be processed soon', 'success')
+            })
+            .catch((err) => console.log(err))
+    }
 
     render() {
         return (
@@ -148,7 +170,7 @@ class HistoryDetail extends React.Component {
                         : <p>You have no transation history</p>
                 }
                 {
-                    this.props.cart !== 0 && this.state.history == true ?
+                    this.state.history == true ?
                         <div>
                             <div className='row'>
                                 <div className='col-md-6' style={{ cursor: 'pointer', borderBottomColor: '#E16868', borderBottom: 'solid 2px #E16868' }}>
@@ -176,7 +198,7 @@ class HistoryDetail extends React.Component {
                                 </table>
                             </div>
                         </div> :
-                        this.state.pending == true || this.state.pendingTrans ?
+                        this.state.pending == true || this.state.pendingTrans.length>0 ?
                             <div>
                                 <div className='row'>
                                     <div className='col-md-6' style={{ cursor: 'pointer' }}>
@@ -213,9 +235,78 @@ class HistoryDetail extends React.Component {
                             </div>
                 }
 
-                {/* MODAL HISTORY */}
+                {/* MODAL DETAIL */}
                 <section>
-                    {this.renderDetailHistory()}
+                <Modal
+                style={{
+                  fontFamily: "Source Sans Pro",
+                  overflowY: "auto",
+                  maxHeight: "100vh"
+                }}
+                visible={this.state.modalHistory}
+                width="1200"
+                height="600"
+                effect="fadeInUp"
+                onClickAway={() => this.setState({ modalHistory: false })}>
+                <p
+                  className="text-left"
+                  style={{
+                    margin: "20px",
+                    fontWeight: "bold"
+                  }}>Invoice {this.state.selectedInvoice}</p>
+                <table className='table text-left' style={{margin:'20px'}}>
+                    <thead>
+                        <tr>
+                            <td></td>
+                            <td>Product</td>
+                            <td>Price</td>
+                            <td>Discount</td>
+                            <td>Qty</td>
+                            <td>Total</td> 
+                        </tr>
+                    </thead>
+                    {this.renderDetail()}
+                    </table>
+                    <p>Total: Rp {this.totalPrint()}</p>
+                </Modal>
+                </section>
+
+                {/* MODAL PAY */}
+                <section>
+                <Modal
+                style={{
+                  fontFamily: "Source Sans Pro",
+                  overflowY: "auto",
+                  maxHeight: "100vh"
+                }}
+                visible={this.state.modalPay}
+                width="800"
+                height="500"
+                effect="fadeInUp"
+                onClickAway={() => this.setState({ modalPay: false })}>
+                <p
+                  className="text-left"
+                  style={{
+                    margin: "20px",
+                    fontWeight: "bold"
+                  }}>Payment Confirmation</p>
+                  <div className='table text-left' style={{margin:'20px'}}>
+                    <thead>
+                        <tr>
+                            No Invoice {this.state.selectedInvoice}
+                        </tr><hr/>
+                    </thead>
+                  {this.renderPayment()}<br/>
+                  <p><b>Total: Rp {this.totalPrint()}</b></p>
+                  <p>Bank Transfer to 162.120.1994 BCA <i>PT Glossier Indonesia</i></p>
+                  <label>Upload Payment Proof</label><br/>
+                  <input type="file" onChange={this.onChangeHandler} />
+                  <input type='button' value='Upload' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px' }} onClick={() => this.btnUpload(this.state.selectedInvoice)} />
+
+
+                  </div>
+
+                </Modal>
                 </section>
 
 

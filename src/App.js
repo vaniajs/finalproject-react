@@ -14,9 +14,10 @@ import ManageProduct from './component/manageProduct4';
 import ProductDetail from './component/productDetail2';
 import CartDetail from './component/cartDetail';
 import HistoryDetail from './component/history';
-
+import ManageTransaction from './component/manageTransaction';
 import Verify from './component/verify';
 import Verified from './component/verified';
+import PageNotFound from './component/pageNotFound';
 import { keepLogin, cartLength, cookieChecked} from './1.actions'
 import { connect } from 'react-redux';
 import { Route , withRouter , Switch } from 'react-router-dom';
@@ -54,7 +55,7 @@ class App extends Component {
         <div className="App">
           <Header />
           {
-            this.state.pathName==='/manage-product' || this.state.pathName==='/verify' || this.state.pathName==='/register' || this.state.pathName==='/login' || this.state.pathName==='/cart-detail' || this.state.pathName==='/history' ? null
+            this.state.pathName==='/manage-product' || this.state.pathName==='/verify' || this.state.pathName==='/register' || this.state.pathName==='/login' || this.state.pathName==='/cart-detail' || this.state.pathName==='/history' || this.state.pathName==='/manage-transaction'? null
             :        <Sidebar />
           }
           {/* {
@@ -62,7 +63,7 @@ class App extends Component {
             :        <Search />
 
           } */}
-          
+          <Switch>
           <Route path="/" component={Home} exact />
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login}/>
@@ -76,10 +77,12 @@ class App extends Component {
           <Route path="/product-detail/:id" component={ProductDetail}/>
           <Route path="/cart-detail" component={CartDetail}/>
           <Route path="/history" component={HistoryDetail}/>
+          <Route path="/manage-transaction" component={ManageTransaction}/>
 
           <Route path="/verify" component={Verify} exact />
           <Route path="/verified" component={Verified} exact />
-
+          <Route path='*' component={PageNotFound} />
+          </Switch>
           <Footer />
   
           </div>

@@ -10,7 +10,7 @@ class Footer extends React.Component {
 
       // </div>
       <div className="fluid-container" style={{backgroundColor:"#FFF9F9",position:"fixed", width:"100%", height:"40px", bottom:"0px", left:"0px", zIndex:'1'}}>
-        <p style={styling} className="text-center"><i>@sociolla</i></p>
+        <p style={styling} className="text-center"><i>@glossier</i></p>
               
       </div>
     );

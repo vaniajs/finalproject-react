@@ -1,9 +1,9 @@
-const INITIAL_STATE = {dataFilter:[]}
+const INITIAL_STATE = {pendTrans:null}
 
 export default(state=INITIAL_STATE,action)=>{
     switch(action.type){
-        case 'DATA_FILTER':
-            return {dataFilter:action.payload}
+        case 'PEND_TRANS':
+            return {pendTrans:action.payload}
         default:
             return state
     }

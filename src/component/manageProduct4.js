@@ -28,7 +28,7 @@ class ManagePrd extends React.Component {
     currentIndex: null,
     visibleCat: false,
     dltBtn: false,
-    page:1
+    page: 1
   }
 
   openModal() {
@@ -129,14 +129,6 @@ class ManagePrd extends React.Component {
       id_category: this.refs.category.value,
       description: this.refs.description.value
     }
-    // var product = this.refs.product.value var price =
-    // parseInt(this.refs.price.value) var discount =
-    // parseInt(this.refs.discount.value) var qty = parseInt(this.refs.qty.value)
-    // var category = this.refs.category.value var description =
-    // this.refs.description.value
-    // alert(newData.product+newData.price+newData.discount+newData.qty+newData.categ
-    // ory+newData.description) alert(this.refs.description.value)
-
     var formData = new FormData()
     formData.append('image', this.state.selectedFile, this.state.selectedFile.name)
     formData.append('data', JSON.stringify(newData))
@@ -182,7 +174,7 @@ class ManagePrd extends React.Component {
         .put('http://localhost:2000/products/edit/' + this.state.dataEdit.id, fd)
         .then((res) => {
           console.log(res)
-          this.setState({ visibleEdit: false, descValueEdit: '' })
+          this.setState({ visibleEdit: false, descValueEdit: '', dataEdit: {}, currentIndex: 0 })
           this.getData()
         })
         .catch((err) => console.log(err))
@@ -202,17 +194,23 @@ class ManagePrd extends React.Component {
 
   getData = () => {
     axios
-      .get('http://localhost:2000/products/getProducts/'+this.state.page)
+      .get('http://localhost:2000/products/getProducts/' + this.state.page)
       .then((res) => this.setState({ rows: res.data }))
       .catch((err) => console.log(err))
   }
 
-  handleEditClick = (val, index) => {
-    // const valueEdit = index === this.state.currentIndex ? this.state.dataEdit.description : val.description
-    this.setState({ currentIndex: index })
-    if (index === this.state.currentIndex) {
-      this.setState({ dataEdit: val, visibleEdit: true })
-    }
+  // handleEditClick = (val, index) => {
+  //   const valueEdit = index === this.state.currentIndex ? this.state.dataEdit.description : val.description
+  //   this.setState({ currentIndex: index })
+  //   if (index === this.state.currentIndex) {
+  //     this.setState({ dataEdit: val, visibleEdit: true, descValueEdit:valueEdit })
+  //   }
+  // }
+
+  handleEditClick = (val, descValue, index) => {
+    alert(val.product)
+    // const valueEdit = index === this.state.currentIndex ? this.state.dataEdit.description : descValue
+    this.setState({ dataEdit: val, visibleEdit: true, currentIndex: index, descValueEdit: descValue })
   }
 
   printData = () => {
@@ -248,7 +246,7 @@ class ManagePrd extends React.Component {
                 }}><img
                   src={EditBtn}
                   width="20px"
-                  onClick={() => this.handleEditClick(val, index)} alt='btn'/></button>
+                  onClick={() => this.handleEditClick(val, val.description, index)} alt='btn' /></button>
               <button
                 style={{
                   backgroundColor: "transparent",
@@ -256,7 +254,7 @@ class ManagePrd extends React.Component {
                 }}><img
                   src={DelBtn}
                   width="20px"
-                  onClick={() => this.btnDelete(val.id)} alt='btn'/></button>
+                  onClick={() => this.btnDelete(val.id)} alt='btn' /></button>
             </td>
           </tr>
 
@@ -266,16 +264,16 @@ class ManagePrd extends React.Component {
   }
 
   btnPageNext = () => {
-    this.setState({page:this.state.page+1})
+    this.setState({ page: this.state.page + 1 })
     this.getData()
   }
 
   btnPagePrev = () => {
-    if(this.state.page>=1){
-      this.setState({page:this.state.page-1})
+    if (this.state.page > 1) {
+      this.setState({ page: this.state.page - 1 })
       this.getData()
     }
-    
+
   }
   render() {
     if (this.props.role === "admin") {
@@ -296,7 +294,7 @@ class ManagePrd extends React.Component {
                 fontWeight: "bold"
               }}>Add New Product</span><img
               src={AddBtn}
-              width="20px" height='20px' onClick={() => this.setState({ visible: true })} style={{ cursor: 'pointer' }} className='mr-2' alt='btn'/>
+              width="20px" height='20px' onClick={() => this.setState({ visible: true })} style={{ cursor: 'pointer' }} className='mr-2' alt='btn' />
             <span
               className="mr-1"
               style={{
@@ -306,7 +304,7 @@ class ManagePrd extends React.Component {
                 fontWeight: "bold"
               }}>Add Category</span><img
               src={AddBtn}
-              width="20px" height='20px' onClick={() => this.setState({ visibleCat: true })} style={{ cursor: 'pointer' }} className='mr-2' alt='btn'/>
+              width="20px" height='20px' onClick={() => this.setState({ visibleCat: true })} style={{ cursor: 'pointer' }} className='mr-2' alt='btn' />
           </div>
 
           {/* MODAL EDIT PRODUCT */}
@@ -314,109 +312,109 @@ class ManagePrd extends React.Component {
             <Modal
               style={{
                 fontFamily: "Source Sans Pro",
-                position: "absolute",
-                overflow: "auto",
-                maxHeight: "100%"
+                position: "absolute"
               }}
               visible={this.state.visibleEdit}
               width="800"
               height="800"
               effect="fadeInUp"
-              onClickAway={() => this.setState({ visibleEdit: false })}>
-              <p
-                className="text-left"
-                style={{
-                  margin: "20px",
-                  fontWeight: "bold"
-                }}>Edit Product</p>
-              <hr />
-              <form>
-                <div
-                  className="form-group text-left"
+              onClickAway={() => this.setState({ visibleEdit: false, dataEdit: {} })}>
+              <div style={{ overflow: 'scroll', height: '800px', marginBottom: '20px' }}>
+                <p
+                  className="text-left"
                   style={{
-                    margin: "20px"
-                  }}>
-                  <label>Product Name</label>
-                  <input
-                    ref="productEdit"
-                    type="text"
-                    className="form-control"
-                    id="exampleFormControlInput1"
-                    defaultValue={this.state.dataEdit.product} />
-                </div>
-                <div
-                  className="form-group text-left"
-                  style={{
-                    margin: "20px"
-                  }}>
-                  <label>Price</label>
-                  <input
-                    ref="priceEdit"
-                    type="number"
-                    className="form-control"
-                    defaultValue={this.state.dataEdit.price} />
-                </div>
-                <div
-                  className="form-group text-left"
-                  style={{
-                    margin: "20px"
-                  }}>
-                  <label>Discount</label>
-                  <input
-                    ref="discountEdit"
-                    type="number"
-                    className="form-control"
-                    defaultValue={this.state.dataEdit.discount} />
-                </div>
-                <div
-                  className="form-group text-left"
-                  style={{
-                    margin: "20px"
-                  }}>
-                  <label>Quantity</label>
-                  <input
-                    ref="qtyEdit"
-                    type="number"
-                    className="form-control"
-                    defaultValue={this.state.dataEdit.qty} />
-                </div>
-                <div
-                  className="form-group text-left"
-                  style={{
-                    margin: "20px"
-                  }}>
-                  <label>Category</label>
-                  <select
-                    ref="categoryEdit"
-                    className="form-control text-left"
-                    id="exampleFormControlSelect1">
-                    {this.printCategory()}
-                  </select>
-                </div>
-                <div
-                  className="form-group text-left"
-                  style={{
-                    margin: "20px"
-                  }}>
-                  <label>Description</label>
-                  <textarea
-                    ref="descriptionEdit"
-                    className="form-control"
-                    rows="2"
-                    value={this.state.descValueEdit}
-                    onChange={(event) => this.onChangeDescValEdit(event)} />
-                </div>
-                <div
-                  className="form-group text-left"
-                  style={{
-                    margin: "20px"
-                  }}>
-                  <label>Image</label><br />
-                  <img src={`http://localhost:2000/${this.state.dataEdit.image}`} width='100px' alt='btn'/>
-                  <input type="file" onChange={this.onChangeHandlerEdit} />
-                </div>
-              </form>
-              <button onClick={this.saveProduct}>SAVE</button>
+                    margin: "20px",
+                    fontWeight: "bold"
+                  }}>Edit Product</p>
+                <hr />
+                <form>
+                  <div
+                    className="form-group text-left"
+                    style={{
+                      margin: "20px"
+                    }}>
+                    <label>Product Name</label>
+                    <input
+                      ref="productEdit"
+                      type="text"
+                      className="form-control"
+                      id="exampleFormControlInput1"
+                      defaultValue={this.state.dataEdit.product} />
+                  </div>
+                  <div
+                    className="form-group text-left"
+                    style={{
+                      margin: "20px"
+                    }}>
+                    <label>Price</label>
+                    <input
+                      ref="priceEdit"
+                      type="number"
+                      className="form-control"
+                      defaultValue={this.state.dataEdit.price} />
+                  </div>
+                  <div
+                    className="form-group text-left"
+                    style={{
+                      margin: "20px"
+                    }}>
+                    <label>Discount</label>
+                    <input
+                      ref="discountEdit"
+                      type="number"
+                      className="form-control"
+                      defaultValue={this.state.dataEdit.discount} />
+                  </div>
+                  <div
+                    className="form-group text-left"
+                    style={{
+                      margin: "20px"
+                    }}>
+                    <label>Quantity</label>
+                    <input
+                      ref="qtyEdit"
+                      type="number"
+                      className="form-control"
+                      defaultValue={this.state.dataEdit.qty} />
+                  </div>
+                  <div
+                    className="form-group text-left"
+                    style={{
+                      margin: "20px"
+                    }}>
+                    <label>Category</label>
+                    <select
+                      ref="categoryEdit"
+                      className="form-control text-left"
+                      id="exampleFormControlSelect1">
+                      {this.printCategory()}
+                    </select>
+                  </div>
+                  <div
+                    className="form-group text-left"
+                    style={{
+                      margin: "20px"
+                    }}>
+                    <label>Description</label>
+                    <textarea
+                      ref="descriptionEdit"
+                      className="form-control"
+                      rows="2"
+                      value={this.state.descValueEdit}
+                      onChange={(event) => this.onChangeDescValEdit(event)} />
+                  </div>
+                  <div
+                    className="form-group text-left"
+                    style={{
+                      margin: "20px"
+                    }}>
+                    <label>Image</label><br />
+                    <img src={`http://localhost:2000/${this.state.dataEdit.image}`} width='100px' alt='btn' />
+                    <input type="file" onChange={this.onChangeHandlerEdit} />
+                  </div>
+                </form>
+                <input type='button' value='Save' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={this.saveProduct} />
+              </div>
             </Modal>
           </section>
 
@@ -425,8 +423,8 @@ class ManagePrd extends React.Component {
             <Modal
               style={{
                 fontFamily: "Source Sans Pro",
-                overflowY: "auto",
-                maxHeight: "100vh"
+                overflow: 'auto',
+                maxHeight: '1200px'
               }}
               visible={this.state.visible}
               width="800"
@@ -476,7 +474,7 @@ class ManagePrd extends React.Component {
                     ref="discount"
                     type="number"
                     className="form-control"
-                    placeholder="Price in rupiah" />
+                    placeholder="Input Discount (%)" />
                 </div>
                 <div
                   className="form-group text-left"
@@ -488,7 +486,7 @@ class ManagePrd extends React.Component {
                     ref="qty"
                     type="number"
                     className="form-control"
-                    placeholder="Price in rupiah" />
+                    placeholder="Input quantity" />
                 </div>
 
                 <div
@@ -528,8 +526,7 @@ class ManagePrd extends React.Component {
                   <input type="file" onChange={this.onChangeHandler} />
                 </div>
               </form>
-              <button onClick={this.addProduct}>SAVE</button>
-            </Modal>
+              <input type='button' value='Add' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={this.addProduct} />            </Modal>
           </section>
 
           {/* MODAL ADD CATEGORY  */}
@@ -576,9 +573,9 @@ class ManagePrd extends React.Component {
                   </select>
                 </div>
               </form>
-              <input type='button' className='mr-3' onClick={this.addCategory} value='Add' />
+              <input type='button' value='Add' className='mr-3' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={this.addCategory} />
               {
-                this.state.dltBtn ? <input type='button' onClick={this.deleteCategory} value='Delete' /> : <input type='button' onClick={this.deleteCategory} value='Delete' disabled />
+                this.state.dltBtn ? <input type='button' value='Delete' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={this.deleteCategory} /> : <input type='button' value='Delete' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px', opacity: '0.5' }} onClick={this.deleteCategory} disabled />
               }
 
             </Modal>
@@ -601,10 +598,10 @@ class ManagePrd extends React.Component {
               {this.printData()}
             </table>
           </div>
-          <div className='d-flex justify-content-center' style={{marginTop:'-10px'}}>
-              <img width='30px' height='30px' src={prev} className='mr-4' style={{cursor:'pointer'}} onClick={this.btnPagePrev} alt='btn'/>
-              <img width='30px' height='30px' src={next} className='ml-4' style={{cursor:'pointer'}} onClick={this.btnPageNext} alt='btn'/>
-              </div>
+          <div className='d-flex justify-content-center' style={{ marginTop: '-10px' }}>
+            <img width='30px' height='30px' src={prev} className='mr-4' style={{ cursor: 'pointer' }} onClick={this.btnPagePrev} alt='btn' />
+            <img width='30px' height='30px' src={next} className='ml-4' style={{ cursor: 'pointer' }} onClick={this.btnPageNext} alt='btn' />
+          </div>
         </div>
       )
     } else {

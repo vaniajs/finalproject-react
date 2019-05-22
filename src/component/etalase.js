@@ -101,11 +101,19 @@ class Etalase extends React.Component {
         const jsx = searchFilter.map((val,idx) => {
             return (
                 <Card.Group className="justify-content-center" itemsPerRow={4} style={{ margin: "40px" }}>
+                    { 
+                        val.discount > 0 ? <div className='justify-content-center' style={{alignContent:'center' ,marginLeft:'100px', marginTop:'-10px', position:'absolute', borderRadius:'20px', height:'25px', width:'60px', backgroundColor: '#E16868', color: '#FFF9F9', fontWeight:'400'}}>{val.discount}%</div>
+                        : null
+                    }
                     <Link to ={'/product-detail/'+val.id}><Image src={`http://localhost:2000/${val.image}`} width="150px"/></Link>
                     <Card.Content className="text-left mt-1" style={{ fontFamily: "Montserrat", fontSize: "12px" }}>
                         {/* <Card.Header>{val.id}</Card.Header> */}
                         <Card.Header>{val.product}</Card.Header>
-                        <Card.Meta>Rp {val.price}</Card.Meta>
+                        {
+                            val.discount > 0 ? <Card.Meta><s>Rp {val.price}</s> Rp {val.price - (val.price*val.discount/100)}</Card.Meta>
+                            : <Card.Meta> Rp {val.price}</Card.Meta>
+
+                        }
                         {
                             this.props.id !== 0 ?
                                 <Card.Meta onClick={() => this.addToCart(val.id, this.props.id, idx)} style={{ cursor: "pointer" }}>Add to Cart</Card.Meta>

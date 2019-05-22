@@ -101,12 +101,14 @@ class cartDetail extends React.Component {
 
 
     btnCheckOut = () => {
+        
         for (var i=0; i<this.state.cart.length; i++){
             var newData = {
                 id_user: this.props.idUser,
                 id_product: this.state.cart[i].id_product,
                 qty: this.state.cart[i].qty,
                 paid: 'no',
+                date: new Date().getDate() + '-' + new Date().getMonth() + '-' + new Date().getFullYear()
                 // invoice: Date.now()
             }
             Axios.post('http://localhost:2000/checkout/success', newData)

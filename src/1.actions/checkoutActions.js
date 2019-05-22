@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios from 'axios'
 
-export const cartLength = (username) => {
+export const pendingTransLength = (id) => {
     return(dispatch)=>{
-        axios.get('http://localhost:2000/cart/getCart?username=' + username)
+        axios.get('http://localhost:2000/checkout/pendingTrans?id=' + id)
         .then((res)=>{
             dispatch({
                 type: "PEND_TRANS",
@@ -12,4 +12,3 @@ export const cartLength = (username) => {
         .catch((err)=>console.log(err))
     }
 }
-
