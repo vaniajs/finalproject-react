@@ -2,7 +2,6 @@ import axios from 'axios';
 import Cookies from 'universal-cookie';
 
 const objCookie = new Cookies()
-// const objCookie2 = new Cookies()
 
 export const onLogin = (username, password) => {
     return (dispatch) => {
@@ -17,26 +16,24 @@ export const onLogin = (username, password) => {
         })
             .then((res) => {
                 console.log(res)
-                if (res.data.length > 0) {
-                    dispatch({
-                        type: 'LOGIN_SUCCESS',
-                        payload: res.data
-                        // {
-                        //     username: res.data[0].username,
-                        //     role: res.data[0].role,
-                        //     id: res.data[0].id
-                        // }
-                    },
+                if(res.data.length>0){
+                    if(typeof(res.data)==='string'){
+                        dispatch({
+                            type: 'NOT_VERIFIED',
+                            payload: res.data
+                        })
+                    }else{
+                        dispatch({
+                            type: 'LOGIN_SUCCESS',
+                            payload: res.data
+                        },
                     objCookie.set('userData', res.data[0].username ,{path:'/'}),
-                    // objCookie2.set('userId', res.data[0].id ,{path:'/'})
-
-                    )
-                }
-                else {
-                    dispatch({
-                        type: 'USER_NOT_FOUND',
-                    })
-                }
+                 )}
+                }else {
+                        dispatch({
+                            type: 'USER_NOT_FOUND',
+                        })
+                    }
             })
             .catch((err) => {
                 dispatch({
@@ -68,7 +65,7 @@ export const resetUser = () => {
     }
 }
 
-export const userReg = (username, email, mobile, password) => {
+export const userReg = (username, email, mobile, password, history) => {
     return (dispatch) => {
         dispatch({
             type: 'LOADING'
@@ -82,11 +79,16 @@ export const userReg = (username, email, mobile, password) => {
                         payload: res.data
                     })
                 }
-                else{
+                else{ 
+                    // history.push('/verify')
+                    // alert('ini sukses')
+                    // dispatch({
+                    // })
                     dispatch({
                         type: 'REGISTER_SUCCESS',
                         payload: res.data
                     })
+
                 }
                 console.log(res.data)                
             })

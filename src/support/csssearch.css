@@ -1,0 +1,15 @@
+input::placeholder {
+    color: white
+}
+
+.searchbox {
+    border: none;
+    background-color: "#E16868";
+    border-radius: 50px;
+    height: 40px;
+    background-color: #E16868;
+    color: white
+}
+
+
+/* style={{ border: "none", backgroundColor: "#E16868", borderRadius: "50px", color: "white", height: "40px" }} */

@@ -1,4 +1,4 @@
-const INITIAL_STATE = {pendTrans:null}
+const INITIAL_STATE = {pendTrans:0}
 
 export default(state=INITIAL_STATE,action)=>{
     switch(action.type){

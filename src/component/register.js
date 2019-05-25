@@ -3,17 +3,23 @@ import { connect } from "react-redux";
 import Loader from 'react-loader-spinner';
 import { userReg } from '../1.actions';
 import { Redirect } from 'react-router-dom';
-import '../support/cssform.css';
+// import '../support/cssform.css';
 
 class Register extends React.Component {
     state={error:'',reg:false}
 
     componentWillReceiveProps(newProps){
         if(newProps!==''){
-            this.setState({error:newProps.error})
-        }
+            this.setState({error:newProps.error,reg:true})
 
+        }
     }
+
+    // componentDidUpdate(){
+    //     if(this.props.username!==''){
+    //         return <Redirect to='/verify'/>
+    //     }
+    // }
 
     btnReg = () => {
         var username = this.refs.username.value
@@ -37,15 +43,19 @@ class Register extends React.Component {
         }else{
             this.props.userReg(username,email,mobile,password)
             this.setState({reg:true})
+            // swal('Thanks for registering!', 'Please check your email to verify', 'success')
+
+            // this.setState({reg:true})
+            // this.props.history.push
+            // if(this.props.username!==''){
+            //     this.setState({reg:true})
+            // }
+            // this.setState({reg:true})
+      
         }
+
     }
     
-    // errorMsg = () => {
-    //     {
-    //         this.state.error!=='' ?<div> {this.state.error} </div>
-    //         :null
-    //     }
-    // }
 
     renderLoaderOrBtn = () =>{
         if(this.props.loading===true){
@@ -60,11 +70,11 @@ class Register extends React.Component {
     }
 
     render() {
-        if(this.props.username!==''){
-            return <Redirect to='/'/>
-        }
+        // if(this.props.cookie){
+        //     return <Redirect to='/verify'/>
+        // }
 
-        if(this.state.reg===true){
+        if(this.state.reg){
             return <Redirect to='/verify'/>
         }
 
@@ -132,7 +142,8 @@ const mapStateToProps = (state) => {
         username: state.user.username,
         email: state.user.email,
         role: state.user.role,
-        error: state.user.error
+        error: state.user.error,
+        cookie: state.user.cookie
     }
 }
 

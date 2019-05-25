@@ -6,11 +6,14 @@
     text-decoration: none;
     border: none;
     color: #5C5C5C;
+    font-family: Montserrat;
+    font-size: 14px;
+
 }
 
 .bt-link:hover{
     color:#E16868;
-    font-style: italic;
+    text-decoration: none
 }
 
 .s-cart:hover .modal-cart{

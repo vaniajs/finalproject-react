@@ -7,9 +7,10 @@ export default (state=INITIAL_STATE,action) => {
     case 'LOGIN_SUCCESS':
         return{...INITIAL_STATE, username:action.payload[0].username, role:action.payload[0].role, id:action.payload[0].id, cookie:true}
     case 'REGISTER_SUCCESS':
-        return{...INITIAL_STATE,error:action.payload, cookie:true}
+        return{...INITIAL_STATE, username:'isi', cookie:true}
         // return{...INITIAL_STATE, username:action.payload.username, role:action.payload.role, id:action.payload.id}
-
+    case 'NOT_VERIFIED':
+        return{...INITIAL_STATE, error: action.payload, cookie:true}
     case 'USER_NOT_FOUND':
         return{...INITIAL_STATE,error:"Wrong Username / Password", cookie:true}
     case 'SYSTEM_ERROR':
@@ -17,9 +18,9 @@ export default (state=INITIAL_STATE,action) => {
     case 'RESET_USER':
         return {...INITIAL_STATE, cookie:true}
     case 'EMAIL_REGISTERED':
-        return {...INITIAL_STATE,error:action.payload, cookie:true}
+        return {...INITIAL_STATE,error:"Email / username has been taken", cookie:true}
     case 'COOKIE_CHECKED':
-        return {...state, cookie:true}
+        return {...INITIAL_STATE, cookie:true}
     default:
         return state
     }

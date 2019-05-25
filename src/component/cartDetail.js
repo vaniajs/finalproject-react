@@ -3,6 +3,7 @@ import Axios from 'axios';
 import { connect } from 'react-redux';
 import swal from 'sweetalert';
 import { Link } from 'react-router-dom';
+import { cartLength } from '../1.actions/cartActions';
 import AddBtn from './../support/icon/add.png';
 import MinBtn from './../support/icon/min.png';
 import MinDisBtn from './../support/icon/min-dis.png';
@@ -52,6 +53,7 @@ class cartDetail extends React.Component {
         if(yes){
             Axios.delete('http://localhost:2000/cart/delCart/'+id)
             .then((res)=>{
+                this.props.cartLength(this.props.username)
                 this.getCart()
                 swal(`${this.state.cart[index].product}`, 'has been deleted from cart', 'success')
             })
@@ -74,7 +76,7 @@ class cartDetail extends React.Component {
                     <td>{val.discount}%</td>
                     <td>
                         {
-                            val.qty == 1 ?
+                            val.qty === 1 ?
                             <img src={MinDisBtn} width='20px' className='mr-2' onClick={()=>this.MinQty(val.id,val.qty)} style={{cursor:'pointer'}} alt='btn'/>
                             :
                             <img src={MinBtn} width='20px' className='mr-2' onClick={()=>this.MinQty(val.id,val.qty)} style={{cursor:'pointer'}} alt='btn'/>
@@ -172,4 +174,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(cartDetail);
+export default connect(mapStateToProps,{cartLength})(cartDetail);

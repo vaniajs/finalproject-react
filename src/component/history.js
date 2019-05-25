@@ -2,17 +2,20 @@ import React from 'react';
 import Axios from 'axios';
 import { connect } from 'react-redux';
 import swal from 'sweetalert';
-import { Link } from 'react-router-dom';
 import Modal from 'react-awesome-modal';
+import { pendingTransLength } from './../1.actions/checkoutActions';
+import Badge from 'react-bootstrap/Badge'
+
 
 class HistoryDetail extends React.Component {
-    state = { historyTrans: [], pendingTrans: [], history: true, pending: false, 
+    state = { historyTrans: [], pendingTrans: [], history: false, pending: false, 
                 modalHistory: false,
                 detail: [], selectedInvoice : '', modalPay: false, selectedFile:'' }
 
     componentDidMount() {
         this.getPendingTrans()
         this.getHistoryTrans()
+
     }
 
     getHistoryTrans = () => {
@@ -27,6 +30,9 @@ class HistoryDetail extends React.Component {
         Axios.get('http://localhost:2000/checkout/pendingTrans?id=' + this.props.idUser)
             .then((res) => {
                 this.setState({ pendingTrans: res.data })
+                if(res.data>0){
+                    this.setState({pending:true, history:false})
+                }
             })
             .catch((err) => console.log(err))
     }
@@ -84,8 +90,21 @@ class HistoryDetail extends React.Component {
                     <td>{val.invoice}</td>
                     <td></td>
                     <td>Rp {val.total}</td>
-                    <td><input type='button' value='Detail Checkout' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px' }} onClick={() => this.btnDetail(val.invoice)} />
-                        <input type='button' value='Pay Now' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={()=>this.btnPay(val.invoice)} /></td>
+                    
+                    {
+                        val.paid==='pending'?
+                        <td><input type='button' value='Detail Checkout' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px' }} onClick={() => this.btnDetail(val.invoice)} />
+                        <input type='button' value='PENDING' className='mt-2' style={{ opacity:'0.8',padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={()=>this.btnPay(val.invoice)} disabled/>
+                        </td>
+                        :
+                        <td>
+                        <input type='button' value='Detail Checkout' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px' }} onClick={() => this.btnDetail(val.invoice)} />
+                        <input type='button' value='Pay Now' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={()=>this.btnPay(val.invoice)} />
+
+                        </td>
+                    }
+                   
+                
                 </tr>
             )
         })
@@ -156,7 +175,8 @@ class HistoryDetail extends React.Component {
             .put('http://localhost:2000/checkout/payment?invoice='+invoice, formData)
             .then((res) => {
               console.log(res.data)
-              this.setState({ modalPay: false, selectedFile:'' })
+              this.setState({ modalPay: false, selectedFile:'', history: true})
+              this.props.pendingTransLength(this.props.idUser)
               swal('Upload Success!', 'Your transaction will be processed soon', 'success')
             })
             .catch((err) => console.log(err))
@@ -166,11 +186,12 @@ class HistoryDetail extends React.Component {
         return (
             <div className='container' style={{ marginTop: '50px' }}>
                 {
-                    this.props.transaction !== 0 ? null
+                    this.state.history.length !== 0 ? null
                         : <p>You have no transation history</p>
                 }
                 {
-                    this.state.history == true ?
+                    // -------- HISTORY TRANS -------- //
+                    this.state.history === true ?
                         <div>
                             <div className='row'>
                                 <div className='col-md-6' style={{ cursor: 'pointer', borderBottomColor: '#E16868', borderBottom: 'solid 2px #E16868' }}>
@@ -198,14 +219,23 @@ class HistoryDetail extends React.Component {
                                 </table>
                             </div>
                         </div> :
-                        this.state.pending == true || this.state.pendingTrans.length>0 ?
+                    // -------- PENDING TRANS -------- //
+                    // this.state.pending == true || this.state.pendingTrans.length > 0 ?
                             <div>
                                 <div className='row'>
                                     <div className='col-md-6' style={{ cursor: 'pointer' }}>
                                         <p onClick={() => this.setState({ pending: false, history: true })}>Transaction History</p>
                                     </div>
                                     <div className='col-md-6' style={{ cursor: 'pointer', borderBottomColor: '#E16868', borderBottom: 'solid 2px #E16868' }}>
-                                        <p>Pending Transactions</p>
+
+                                        <p>Pending Transactions
+                                            {
+                                                this.state.pendingTrans.length > 0 ?
+                                                <Badge pill variant='danger' style={{marginLeft:'-4px', marginTop:'-2px', width:'1%', position:"absolute", zIndex:'-1'}}><div className='danger' style={{color:'#d9534f', fontSize:'8px'}}>*</div></Badge>
+                                                :null
+                                            }
+                                            
+                                        </p>
                                     </div>
                                 </div>
                                 <div className='row'>
@@ -222,17 +252,17 @@ class HistoryDetail extends React.Component {
                                             {
                                                 this.state.pendingTrans ?
                                                     this.renderPending()
-                                                    :
-                                                    <p>You have no pending transactions</p>
+                                                    : <p>You have no pending transactions</p>
+                                                    
                                             }
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
-                            :
-                            <div className='justify-content-center'>
-                                <Link to='/featured-products'><input type='button' value='Continue Shopping' className='mt-2' style={{ border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9' }} /></Link>
-                            </div>
+                            // :
+                            // <div className='justify-content-center'>
+                            //     <Link to='/featured-products'><input type='button' value='Continue Shopping' className='mt-2' style={{ border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9' }} /></Link>
+                            // </div>
                 }
 
                 {/* MODAL DETAIL */}
@@ -254,19 +284,21 @@ class HistoryDetail extends React.Component {
                     margin: "20px",
                     fontWeight: "bold"
                   }}>Invoice {this.state.selectedInvoice}</p>
-                <table className='table text-left' style={{margin:'20px'}}>
+                  <div className='row table-responsive' style={{alignSelf:'auto'}}>
+                <table className='text-left table' style={{margin:'20px'}}>
                     <thead>
                         <tr>
                             <td></td>
-                            <td>Product</td>
-                            <td>Price</td>
-                            <td>Discount</td>
-                            <td>Qty</td>
-                            <td>Total</td> 
+                            <td><b>Product</b></td>
+                            <td><b>Price</b></td>
+                            <td><b>Discount</b></td>
+                            <td><b>Qty</b></td>
+                            <td><b>Total</b></td> 
                         </tr>
                     </thead>
                     {this.renderDetail()}
                     </table>
+                    </div>
                     <p>Total: Rp {this.totalPrint()}</p>
                 </Modal>
                 </section>
@@ -319,8 +351,9 @@ const mapStateToProps = (state) => {
     return {
         idUser: state.user.id,
         username: state.user.username,
-        cart: state.cart.cart
+        cart: state.cart.cart,
+        trans: state.trans.pendTrans
     }
 }
 
-export default connect(mapStateToProps)(HistoryDetail);
+export default connect(mapStateToProps,{pendingTransLength})(HistoryDetail);

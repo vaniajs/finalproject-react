@@ -18,6 +18,7 @@ import ManageTransaction from './component/manageTransaction';
 import Verify from './component/verify';
 import Verified from './component/verified';
 import PageNotFound from './component/pageNotFound';
+// import Wheel from './component/wheel2';
 import { keepLogin, cartLength, cookieChecked} from './1.actions'
 import { connect } from 'react-redux';
 import { Route , withRouter , Switch } from 'react-router-dom';
@@ -27,6 +28,9 @@ import './support/cssheader.css';
 import './support/font.css';
 import './support/cssbackground.css';
 import './App.css';
+import BG from './../src/picts/bg.png';
+import Fortune from './component/fortune';
+
 
 
 const objCookie = new Cookie()
@@ -34,16 +38,15 @@ class App extends Component {
 
   state = {cart: [], showSidebar: true, pathName:''}
 
+
   componentDidMount(){
-    var ck = objCookie.get('userData')
-    // var id = objCookie.get('userId')
-    if(ck!==undefined){
-      this.props.keepLogin(ck)
-    }
-    else{
+    if(objCookie.get('userData')!==undefined){
+      this.props.keepLogin(objCookie.get('userData'))
+    }else{
       this.props.cookieChecked()
     }
   }
+
 
   componentWillReceiveProps(newProps){
     this.setState({pathName:newProps.location.pathname})
@@ -55,7 +58,7 @@ class App extends Component {
         <div className="App">
           <Header />
           {
-            this.state.pathName==='/manage-product' || this.state.pathName==='/verify' || this.state.pathName==='/register' || this.state.pathName==='/login' || this.state.pathName==='/cart-detail' || this.state.pathName==='/history' || this.state.pathName==='/manage-transaction'? null
+            this.state.pathName==='/manage-product' || this.state.pathName==='/verify' || this.state.pathName==='/register' || this.state.pathName==='/login' || this.state.pathName==='/cart-detail' || this.state.pathName==='/history' || this.state.pathName==='/manage-transaction' || this.state.pathName==='/' || this.state.pathName==='/verified' ? null
             :        <Sidebar />
           }
           {/* {
@@ -63,7 +66,26 @@ class App extends Component {
             :        <Search />
 
           } */}
+          {
+            this.state.pathName==='/featured-products' || this.state.pathName === '/face' || this.state.pathName === '/eye' || this.state.pathName === '/lip' || this.state.pathName === '/skincare' ?
+            <img src={BG} style={{zIndex:'-1',position:'fixed',marginTop:'60px', marginLeft:'410px', height:'600px',opacity:'0.4'}} alt='bg'/>
+            : <img src={BG} style={{zIndex:'-1',position:'fixed',marginTop:'60px', marginLeft:'410px', height:'600px',opacity:'0.8'}} alt='bg'/>
+
+          }
+   
+          {/* {
+            this.state.fortune ?
+            <Fortune/>
+            : null
+          } */}
+          {
+            this.props.cart === 2 ?
+            <Fortune/>
+            : null
+          }
+
           <Switch>
+       
           <Route path="/" component={Home} exact />
           <Route path="/register" component={Register} />
           <Route path="/login" component={Login}/>
@@ -81,8 +103,13 @@ class App extends Component {
 
           <Route path="/verify" component={Verify} exact />
           <Route path="/verified" component={Verified} exact />
+          {/* <Route path="/wheel" component={Wheel} exact /> */}
+          <Route path='/fortune' component={Fortune} />
+
           <Route path='*' component={PageNotFound} />
+
           </Switch>
+
           <Footer />
   
           </div>
@@ -106,7 +133,8 @@ const mapStateToProps = (state) => {
   return{
     role: state.user.role,
     id: state.user.id,
-    cookie: state.user.cookie
+    cookie: state.user.cookie,
+    cart: state.cart.cart
   }
 }
 

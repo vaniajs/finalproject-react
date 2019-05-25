@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import swal from 'sweetalert';
+import './../support/cssmix.css';
 
 class ProductDetail extends React.Component {
     state = { product: [], proteksi:'' }
@@ -19,6 +20,10 @@ class ProductDetail extends React.Component {
         }else{
             this.setState({proteksi:''})
         }
+    }
+    
+    fnAlert=()=>{
+        alert('Please register to purchase item')
     }
 
     addToCart = (id_product, id_user, idx) => {
@@ -97,12 +102,22 @@ class ProductDetail extends React.Component {
                            
                         </div>
                     </div>
-                    <div className='col-md-6 text-left'>
-                        <h1 style={{ color: '#5C5C5C', fontSize: '20px' }}>{val.product}</h1>
+                    <div className='col-md-6 text-left' style={{fontFamily:'Source Sans Pro'}}>
+                        <h1 style={{ color: '#5C5C5C', fontSize: '20px', fontWeight:"bolder", fontFamily:'Montserrat' }}>{val.product}</h1>
                         <hr></hr>
 
-                        <div style={{ backgroundColor: '#E16868', width: '50px', height: '24px', textAlign: 'center', color: 'white', display: 'inline-block', verticalAlign: 'center', fontWeight: '500' }}>{val.discount}%</div>
-                        <span style={{ fontWeight: '600', fontSize: '14px', color: '#E16868', marginLeft: '10px', textDecoration: 'line-through' }} >Rp {val.price}</span>
+                        {
+                            val.discount>0?
+                            <div style={{ backgroundColor: '#E16868', width: '50px', height: '24px', textAlign: 'center', color: 'white', display: 'inline-block', verticalAlign: 'center', fontWeight: '500' }}>{val.discount}%</div>
+                            :null
+                            
+                        }
+                        {
+                            val.discount>0?
+                            <span style={{ fontWeight: '600', fontSize: '14px', color: '#E16868', marginLeft: '10px', textDecoration: 'line-through' }} >Rp {val.price}</span>:
+                            null
+                        }
+                       
                         <div style={{ fontSize: '16px', fontWeight: '700', color: '#FF5722', marginTop: '5px' }}>Rp {val.price - (val.price * val.discount / 100)}</div>
 
                         <div className='row'>
@@ -126,31 +141,22 @@ class ProductDetail extends React.Component {
                         {
                             this.props.username !== '' ?
                                 <div className='row mt-1'>
-                                    {/* <div className='col-md-3'>
-                                        <input style={{ width: '100%', fontSize: '12px', fontWeight: '500' }} className='btn border-secondary' value='Add to Wishlist' />
-                                    </div> */}
-                                    {/* <div className='col-md-3'>
-                                        <input style={{ width: '100%', fontSize: '12px', fontWeight: '500' }} className='btn btn-primary' value='Purchase Now' />
-                                    </div> */}
+                                    
                                     <div className='col-md-3 mb-2'>
-                                        <input type='button' style={{ width: '100%', fontSize: '12px', fontWeight: '500' }} className='btn btn-success' value='Add to Cart' onClick={()=>this.addToCart(val.id,this.props.idUser,idx)}/>
+                                    <input type="button" style={{ border: "none", backgroundColor: "#E16868", borderRadius: "20px", padding:'10px',fontWeight:'bolder', color: "white", height: "40px" }} value="Add to Cart" onClick={()=>this.addToCart(val.id,this.props.idUser,idx)}/>
+                                    {/* className="col-md-2 text-center" */}
+                                        {/* <input type='button' style={{ width: '100%', fontSize: '12px', fontWeight: '500' }} className='btn btn-success' value='Add to Cart' /> */}
                                     </div>
-                                    {/* <input className='btn btn-primary col-md-3' value='Beli Sekarang'/>
-                            <input className='btn btn-success col-md-2' value='Masukkan ke Keranjang'/> */}
+                                    
                                 </div>
                                 : <div>
                                     <div className='row mt-4'>
-                                        {/* <div className='col-md-2'>
-                                            <input style={{ width: '100%', fontSize: '12px', fontWeight: '500' }} disabled className='btn border-secondary' value='Add to Wishlist' />
-                                        </div> */}
-                                        {/* <div className='col-md-3'>
-                                            <input style={{ width: '100%', fontSize: '12px', fontWeight: '500' }} disabled className='btn btn-success' value='Add to Cart' />
-                                        </div> */}
+                                        
                                         <div className='col-md-3 mb-2'>
-                                            <input style={{ width: '100%', fontSize: '12px', fontWeight: '500' }} disabled className='btn btn-success' value='Add to Cart' />
+                                    <input type="button" style={{cursor:'default', border: "none", backgroundColor: "#E16868", borderRadius: "20px", padding:'8px', fontWeight:'bolder', color: "white", height: "40px", fontSize:'14px', opacity:'0.5'}} value="Add to Cart" onClick={this.fnAlert}/>
                                         </div>
                                     </div>
-                                    <h8>Don't have any account yet? <Link to='/register'>Register</Link></h8>
+                                    <h8 className='acc'>Don't have any account yet? Register <Link to='/register' className='reg'>here</Link> </h8>
                                 </div>
                         }
 

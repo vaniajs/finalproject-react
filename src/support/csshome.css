@@ -1,0 +1,47 @@
+/* .shopnow{
+    font-family: Montserrat;
+    color: #E16868;
+    font-size: 14px;
+    /* font-weight: bolder; */
+    /* position: absolute;
+    margin-left: -175px;
+    margin-top: 475px */
+
+/* } */ 
+
+/* .shopnow:hover{
+    text-decoration-line: currentColor;
+    border-bottom: none;
+    font-size: 16px;
+    font-weight: bolder;
+} */
+
+.shopnow {
+    position: absolute;
+    margin-left: -175px;
+    margin-top: 475px;
+    font-family: Montserrat;
+    font-weight: bolder;
+    font-size: 14px;
+    color: #E16868;
+    background-image: linear-gradient(120deg, #E16868 0%, rgb(108, 212, 210) 100%);
+    background-repeat: no-repeat;
+    background-size: 100% 0.2em;
+    padding: 5px;
+    background-position: 0 88%;
+    transition: background-size 0.25s ease-in;
+
+}
+
+.shopnow::after{
+    border-radius: 10px
+}
+
+.shopnow:hover {
+      background-size: 100% 88%;
+      color:#FFF9F9;
+      font-weight: 900
+    }
+  
+
+/* style={{ fontFamily: 'Montserrat', color: "#5C5C5C", fontSize: '14px', fontWeight: "bolder", marginTop:"480px", marginLeft:'-750px'}} */

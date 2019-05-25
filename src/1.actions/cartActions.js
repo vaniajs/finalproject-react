@@ -5,7 +5,7 @@ export const cartLength = (username) => {
         axios.get('http://localhost:2000/cart/getCart?username=' + username)
         .then((res)=>{
             dispatch({
-                type: "PEND_TRANS",
+                type: "ISI_CART",
                 payload: res.data.length
             })
         })

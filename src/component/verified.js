@@ -1,6 +1,7 @@
-import React from 'react'
-import queryString from 'query-string'
+import React from 'react';
+import queryString from 'query-string';
 import Axios from 'axios';
+import { Link } from 'react-router-dom';
 
 class Home extends React.Component{
     componentDidMount(){
@@ -10,10 +11,12 @@ class Home extends React.Component{
     verification = () => {
         var params = queryString.parse(this.props.location.search)
         console.log(params)
-        Axios.put('http://localhost:2000/user/verified',{
-            username: params.username,
-            password: params.password
-        })
+        // alert(params)
+        Axios.put('http://localhost:2000/user/verified?username='+params.username)
+        // ,{
+        //     username: params.username
+        //     // password: params.password
+        // })
         .then((res)=>console.log(res))
         .catch((err)=>console.log(err))
         // GET DATA USERNAME & PASSWORD DARI URL
@@ -22,8 +25,13 @@ class Home extends React.Component{
 
     render(){
         return(
-            <div className="container" style={{marginTop:"100px"}}>
-               Your account has been verified. You can now login with your email.
+            <div className="container" style={{
+                fontFamily: "Montserrat",
+                fontWeight: "bolder",
+                marginTop: "100px",
+                color: "#5C5C5C",
+              }}>
+               Your account has been verified. You can now <Link to='/login' style={{color:'#E16868'}}>login</Link> with your email.
             </div>
         )
     }

@@ -57,12 +57,12 @@ class ManageTransaction extends React.Component{
                     <td>{val.id_user}</td>
                     <td>Rp {val.total}</td>
                     <td>
-                        <img src={`http://localhost:2000/${val.payment}`} width='50px' style={{cursor:'pointer'}} onClick={()=>this.fnModal(val.invoice,val.payment)}/>
+                        <img src={`http://localhost:2000/${val.payment}`} width='50px' style={{cursor:'pointer'}} onClick={()=>this.fnModal(val.invoice,val.payment)} alt='btn'/>
                     </td>
                     <td>
                         {
-                            val.paid == 'declined' ? 'Declined' :
-                            val.paid == 'yes' ? 'Completed'  : <div><input type='button' value='Confirm' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={()=>this.btnConfirm(val.invoice)} />
+                            val.paid === 'declined' ? 'Declined' :
+                            val.paid === 'yes' ? 'Completed'  : <div><input type='button' value='Confirm' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={()=>this.btnConfirm(val.invoice)} />
                             <input type='button' value='Decline' className='mt-2' style={{ padding: '8px', border: 'none', borderRadius: '10px', backgroundColor: '#E16868', color: '#FFF9F9', marginBottom: '60px', marginLeft: '10px' }} onClick={()=>this.btnDecline(val.invoice)} /></div>
                         }
                     </td>    
@@ -121,7 +121,7 @@ class ManageTransaction extends React.Component{
                             No Invoice {this.state.selectedInvoice}
                         </tr><hr/>
                     </thead>
-                    <center><img src={`http://localhost:2000/${this.state.img}`} width='650px'/></center>
+                    <center><img src={`http://localhost:2000/${this.state.img}`} width='650px' alt='btn'/></center>
 
                   </div>
 
